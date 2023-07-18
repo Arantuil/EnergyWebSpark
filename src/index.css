@@ -2,48 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.gradientAnimate {
-  position: relative;
-  box-shadow: 0 15px 25px rgba(0,0,0,0.25);
-  overflow: hidden;
-}
-.gradientAnimate:before {
-  content: "";
-  height: 200%;
-  width: 200%;
-  position: absolute;
-  background: conic-gradient(
-    #6ACEFA,
-    #628DEA,
-    #A566FF,
-    #628DEA,
-    #6ACEFA
-  );
-  left: -45%;
-  top: -35%;
-  animation: spin 2.0s infinite linear;
-}
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-.gradientAnimate:after {
-  content: "";
-  color: white;
-  border-radius: 30px;
-  position: absolute;
-  background-color: rgb(250, 250, 255);
-  height: 94%;
-  width: 94%;
-  top: 3%;
-  left: 3%;
-}
-
-.bgimg {
-  filter: blur(5px);
-}
-
-.__react_modal_image__header {
-  display: none;
+html {
+  overflow-y: scroll;
 }

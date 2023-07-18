@@ -12,7 +12,6 @@ const Navbar = () => {
     const blockchain = useSelector((state) => state.blockchain);
 
     const getData = () => {
-        console.log('test')
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
             dispatch(fetchData(blockchain.account));
         }
@@ -21,14 +20,14 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="absolute flex flex-row ml-[7em] w-[calc(100%-7em-2em)] sm:w-[calc(100%-7em-4em)]">
-            <div className="flex relative ml-0 mr-auto h-[52px] bg-[#282945] rounded-[100px]">
+        <div className="absolute gap-1 sm:gap-2 md:gap-3 flex flex-row ml-24 sm:ml-[6.5rem] w-[calc(100%-7em-0.5em)] sm:w-[calc(100%-7em-4em)]">
+            <div className="flex relative ml-0 mr-auto h-[56px] bg-[#282945] rounded-xl">
                 <input
                     type="text"
                     placeholder="search for campaigns"
-                    className="flex w-full font-epilogue font-normal text-[14px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
+                    className="flex text-center w-full font-epilogue font-normal text-[12px] sm:text-[14px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
                 />
-                <div className="w-[72px] h-full rounded-[20px] bg-[#1DC071] flex justify-center items-center cursor-pointer">
+                <div className="w-[72px] h-full rounded-xl bg-[#8C6DFD] flex justify-center items-center cursor-pointer">
                     <img
                         src={search}
                         alt="search"
@@ -36,11 +35,11 @@ const Navbar = () => {
                     />
                 </div>
             </div>
-            <div className="flex relative ml-auto mr-0">
+            <div className="flex gap-1 sm:gap-2 md:gap-3 relative ml-auto mr-0">
                 <CustomButton
                     btnType="button"
                     title={blockchain.account ? "Create a campaign" : "Connect"}
-                    styles={blockchain.account ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
+                    styles={blockchain.account ? "bg-[#8C6DFD]" : "bg-[#8c6dfd]"}
                     handleClick={() => {
                         if (blockchain.account) navigate("create-campaign");
                         else { 

@@ -1,4 +1,4 @@
-    <svg
+<svg
       xmlns="http://www.w3.org/2000/svg"
       width="400"
       height="400"
@@ -23,16 +23,16 @@
           gradientUnits="userSpaceOnUse"
         ></linearGradient>
       </defs>
-      <g>
+      <g fill="#8c6dfd" fillOpacity="1">
         <g
-          fill="#1dc071"
+          fill="#8c6dfd"
           fillOpacity="1"
           display="inline"
           opacity="1"
-          transform="matrix(1.04234 0 0 1.04234 -3.716 -2.313)"
+          transform="translate(-3.716 -2.313) scale(1.04234)"
         >
           <path
-            fill="#1dc071"
+            fill="#8c6dfd"
             fillOpacity="1"
             stroke="url(#linearGradient7805)"
             d="M65.713 5.535L26.41 60.181l23.66-.1-6.731 40.094 38.806-54.646-23.66.1z"
