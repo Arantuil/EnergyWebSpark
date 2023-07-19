@@ -18,7 +18,7 @@ const CampaignCard = ({ id, styles, title, image, owner, description, target, am
             <img
                 src={image}
                 alt="fund"
-                className="w-full h-[158px] object-cover rounded-xl"
+                className="w-full h-[160px] object-cover rounded-xl"
             
             />
             <div className='translate-y-[-4px] relative rounded h-[4px] w-full bg-[#3a3a43]'>
@@ -33,11 +33,6 @@ const CampaignCard = ({ id, styles, title, image, owner, description, target, am
             </div>
 
             <div className="flex flex-col p-4">
-                <div className="flex flex-row items-center mb-[18px]">
-                    <p className="ml-[12px] mt-[2px] font-epilogue font-medium text-[12px] text-[#808191]">
-                        Charity
-                    </p>
-                </div>
                 <div className="block">
                     <h3 className="font-epilogue font-semibold text-[16px] text-white text-left leading-[26px] truncate">
                         {title}
@@ -50,7 +45,7 @@ const CampaignCard = ({ id, styles, title, image, owner, description, target, am
                 <div className="flex justify-between flex-wrap mt-[15px] gap-2">
                     <div className="flex flex-col">
                         <h4 className="font-epilogue font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
-                            {amountCollected}
+                            {Math.round(amountCollected * 100) / 100} EWT
                         </h4>
                         <p className="mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] text-[#808191] sm:max-w[120px] truncate">
                             Raised out of {target} EWT

@@ -5,3 +5,7 @@
 html {
   overflow-y: scroll;
 }
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

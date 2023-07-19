@@ -10,6 +10,7 @@ import search from './search.svg';
 import menu from './menu.svg';
 import money from './money.svg';
 import loader from './loader.svg';
+import profileGray from './profileGray.svg';
 
 export {
   tagType,
@@ -23,5 +24,6 @@ export {
   search,
   menu,
   money,
-  loader
+  loader,
+  profileGray
 };

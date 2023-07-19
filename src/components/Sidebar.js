@@ -1,9 +1,24 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchData } from '../redux/data/dataActions';
 
 import { logo, dashboard, createCampaign, withdraw, profile } from "../assets";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const blockchain = useSelector((state) => state.blockchain);
+
+  const getData = () => {
+      if (blockchain.account !== "" && blockchain.smartContract !== null) {
+          dispatch(fetchData(blockchain.account));
+      }
+  };
+
+  useEffect(() => {
+      getData();
+  }, [])
+
   const navlinks = [
     {
         name: "dashboard",
@@ -35,7 +50,7 @@ const Sidebar = () => {
 
   return (
     <div className="flex justify-between items-center flex-col sticky">
-      <Link to="/">
+      <Link className='active:brightness-105' to="/">
         <div className='w-[58px] h-[58px] bg-[#282945] rounded-xl flex justify-center'>
           <img src={logo} className='w-[80%]' />
         </div>
@@ -44,10 +59,17 @@ const Sidebar = () => {
       <div className="mt-[22px] flex-1 flex flex-col justify-between items-center bg-[#282945] rounded-[20px] w-[80px] py-4">
         <div className="flex flex-col w-[70%] justify-center items-center gap-5">
         {navlinks.map((link) => (
-          <Link onClick={() => setNewActivePage(link.name)} to={link.link} className={`flex justify-center w-full rounded-xl aspect-square
-          ${link.name === activePage ? 'bg-[#1f203a]' : 'bg-[#303150]'}`}>
-            <img className='w-[32px]' src={link.imgUrl} alt="" />
-          </Link>
+          link.name === 'profile' ? (
+            <Link onClick={() => setNewActivePage(link.name)} to={link.link} className={`active:brightness-105 flex justify-center w-full rounded-xl aspect-square
+            ${link.name === activePage ? 'bg-[#1f203a]' : 'bg-[#303150]'}`}>
+              <img className='w-[32px]' src={link.imgUrl} alt="" />
+            </Link>
+          ) : (
+            <Link onClick={() => setNewActivePage(link.name)} to={link.link} className={`active:brightness-105 flex justify-center w-full rounded-xl aspect-square
+            ${link.name === activePage ? 'bg-[#1f203a]' : 'bg-[#303150]'}`}>
+              <img className='w-[32px]' src={link.imgUrl} alt="" />
+            </Link>
+          )
         ))}
         </div>
       </div>

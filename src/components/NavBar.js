@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CustomButton  from "./CustomButton";
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchData } from '../redux/data/dataActions';
 
-import { createCampaign, dashboard, withdraw, logo, menu, search, profile } from "../assets";
+import { createCampaign, dashboard, withdraw, logo, menu, search, profile, profileGray } from "../assets";
 
 const Navbar = () => {
     const dispatch = useDispatch();
@@ -17,6 +17,12 @@ const Navbar = () => {
         }
     };
 
+    useEffect(() => {
+        getData();
+    }, [])
+
+    console.log(blockchain)
+
     const navigate = useNavigate();
 
     return (
@@ -27,7 +33,7 @@ const Navbar = () => {
                     placeholder="search for campaigns"
                     className="flex text-center w-full font-epilogue font-normal text-[12px] sm:text-[14px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
                 />
-                <div className="w-[72px] h-full rounded-xl bg-[#8C6DFD] flex justify-center items-center cursor-pointer">
+                <div className="active:brightness-105 w-[72px] h-full rounded-xl bg-[#8C6DFD] flex justify-center items-center cursor-pointer">
                     <img
                         src={search}
                         alt="search"
@@ -39,7 +45,7 @@ const Navbar = () => {
                 <CustomButton
                     btnType="button"
                     title={blockchain.account ? "Create a campaign" : "Connect"}
-                    styles={blockchain.account ? "bg-[#8C6DFD]" : "bg-[#8c6dfd]"}
+                    styles={blockchain.account ? "active:brightness-105 bg-[#8C6DFD]" : "active:brightness-105 bg-[#8c6dfd]"}
                     handleClick={() => {
                         if (blockchain.account) navigate("create-campaign");
                         else { 
@@ -48,8 +54,19 @@ const Navbar = () => {
                         }
                     }}
                 />
-                <Link to="/profile">
-                    <div className="w-[52px] h-[52px] rounded-full bg-[#1C1D30] flex justify-center items-center cursor-pointer">
+                {blockchain.account === "" || blockchain.account === null ? (
+                    <Link className='flex items-center active:brightness-105' to="/profile">
+                        <div className="w-[52px] h-[52px] rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
+                            <img
+                                src={profileGray}
+                                alt="user"
+                                className="w-[60%] h-[60%] object-contain"
+                            />
+                        </div>
+                    </Link>
+                ) : (
+                <Link className='flex items-center active:brightness-105' to="/profile">
+                    <div className="w-[52px] h-[52px] rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
                         <img
                             src={profile}
                             alt="user"
@@ -57,6 +74,7 @@ const Navbar = () => {
                         />
                     </div>
                 </Link>
+                )}
             </div>
         </div>
     );
