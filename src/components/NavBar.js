@@ -1,13 +1,42 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import CustomButton  from "./CustomButton";
+import CustomButton from "./CustomButton";
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchData } from '../redux/data/dataActions';
-
+import { testCampaingCards } from '../utils/testData';
 import { createCampaign, dashboard, withdraw, logo, menu, search, profile, profileGray } from "../assets";
+import { debounce } from 'lodash';
 
 const Navbar = () => {
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+
+    let data = testCampaingCards;
+    const doSearch = (term) => {
+        const results = data.filter((item) =>
+            item.title.toLowerCase().includes(term.toLowerCase()) || item.owner.toLowerCase().includes(term.toLowerCase())
+        );
+        setSearchResults(results);
+    };
+
+    console.log(searchResults)
+
+    // Debounce the search to prevent excessive calls while typing
+    const debouncedSearch = debounce(doSearch, 200);
+
+    const handleInputChange = (event) => {
+        const term = event.target.value;
+        setSearchTerm(term);
+        debouncedSearch(term);
+    };
+
+    function removeSearchTerm() {
+        setSearchTerm('')
+    }
+    // ------------------------------------------------
+
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
 
@@ -21,18 +50,33 @@ const Navbar = () => {
         getData();
     }, [])
 
-    console.log(blockchain)
+    console.log(blockchain.account)
 
-    const navigate = useNavigate();
 
     return (
-        <div className="absolute gap-1 sm:gap-2 md:gap-3 flex flex-row ml-24 sm:ml-[6.5rem] w-[calc(100%-7em-0.5em)] sm:w-[calc(100%-7em-4em)]">
-            <div className="flex relative ml-0 mr-auto h-[56px] bg-[#282945] rounded-xl">
+        <div className="3xs:ml-[60px] 2xs:ml-[70px] xs:ml-[80px] ml-[96px] sm:ml-[100px] 3xs:w-[calc(100%-60px-16px)] 2xs:w-[calc(100%-70px-16px)] xs:w-[calc(100%-80px-16px)] w-[calc(100%-96px-24px)] sm:w-[calc(100%-96px-48px)] md:w-[calc(100%-96px-64px)] absolute 3xs:h-[40px] 2xs:h-[45px] xs:h-[50px] h-[60px] gap-1 flex flex-row">
+            <div className="flex relative ml-0 mr-auto h-full bg-[#282945] rounded-xl">
                 <input
                     type="text"
-                    placeholder="search for campaigns"
-                    className="flex text-center w-full font-epilogue font-normal text-[12px] sm:text-[14px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
+                    placeholder="search"
+                    value={searchTerm}
+                    onChange={handleInputChange}
+                    className="flex text-center w-full lg:w-[200px] xl:w-[250px] 2xl:w-[300px] font-normal text-[12px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
                 />
+                {searchTerm !== '' ? (
+                    <ul className='3xs:translate-y-[40px] 2xs:translate-y-[45px] xs:translate-y-[50px] translate-y-[60px]
+                    border-2 border-[#8C6DFD] border-solid z-[100] p-[2px] md:p-[4px] lg:p-[6px] w-[162.94px] lg:w-[200px] xl:w-[250px] 2xl:w-[300px] rounded-bl-xl rounded-br-xl absolute text-white bg-[#1C1D30]'>
+                        {searchResults.map((item) => (
+                            <div className='my-[3px] sm:my-[4px] md:my-[6px] rounded-md p-[2px] sm:p-[4px] md:p-[6px] border-2 border-solid border-[#282945]'>
+                                <Link onClick={removeSearchTerm} key={item.campaignId} to={`/campaigns/${item.campaignId}`}>
+                                    <li key={item.campaignId}>{item.title}</li>
+                                </Link>
+                            </div>
+                        ))}
+                    </ul>
+                ) : (
+                    <></>
+                )}
                 <div className="active:brightness-105 w-[72px] h-full rounded-xl bg-[#8C6DFD] flex justify-center items-center cursor-pointer">
                     <img
                         src={search}
@@ -41,14 +85,14 @@ const Navbar = () => {
                     />
                 </div>
             </div>
-            <div className="flex gap-1 sm:gap-2 md:gap-3 relative ml-auto mr-0">
+            <div className="flex gap-1 relative ml-auto mr-0">
                 <CustomButton
                     btnType="button"
                     title={blockchain.account ? "Create a campaign" : "Connect"}
-                    styles={blockchain.account ? "active:brightness-105 bg-[#8C6DFD]" : "active:brightness-105 bg-[#8c6dfd]"}
+                    styles={blockchain.account ? "active:brightness-105 bg-[#8C6DFD] xs:mr-1 mr-2 sm:mr-4" : "animate-pulseSlow active:brightness-105 bg-[#8c6dfd] xs:mr-1 mr-2 sm:mr-4"}
                     handleClick={() => {
                         if (blockchain.account) navigate("create-campaign");
-                        else { 
+                        else {
                             dispatch(connect());
                             getData();
                         }
@@ -56,7 +100,7 @@ const Navbar = () => {
                 />
                 {blockchain.account === "" || blockchain.account === null ? (
                     <Link className='flex items-center active:brightness-105' to="/profile">
-                        <div className="w-[52px] h-[52px] rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
+                        <div className="h-full aspect-square rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
                             <img
                                 src={profileGray}
                                 alt="user"
@@ -65,15 +109,15 @@ const Navbar = () => {
                         </div>
                     </Link>
                 ) : (
-                <Link className='flex items-center active:brightness-105' to="/profile">
-                    <div className="w-[52px] h-[52px] rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
-                        <img
-                            src={profile}
-                            alt="user"
-                            className="w-[60%] h-[60%] object-contain"
-                        />
-                    </div>
-                </Link>
+                    <Link className='flex items-center active:brightness-105' to="/profile">
+                        <div className="h-full aspect-square rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
+                            <img
+                                src={profile}
+                                alt="user"
+                                className="w-[60%] h-[60%] object-contain"
+                            />
+                        </div>
+                    </Link>
                 )}
             </div>
         </div>

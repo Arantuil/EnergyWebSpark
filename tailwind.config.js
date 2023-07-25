@@ -13,6 +13,15 @@ module.exports = {
         '4xs': {'max': '350px'},
         '5xs': {'max': '325px'},
         '6xs': {'max': '300px'}
+      },
+      keyframes: {
+        pulseSlow: {
+          '0%, 100%': { opacity: 1 },
+          '50%': { opacity: 0.8 },
+        }
+      },
+      animation: {
+        pulseSlow: 'pulseSlow 3s ease-in-out infinite',
       }
     },
   },

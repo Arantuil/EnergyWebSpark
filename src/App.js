@@ -19,19 +19,17 @@ import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
-    <div className="relative sm:p-6 p-3 bg-[#1C1D30] min-h-screen flex flex-row">
+    <div className="xs:p-2 p-3 sm:p-6 md:p-8 relative bg-[#1C1D30] min-h-screen flex flex-row">
       <Provider store={store}>
         <Router>
-        <div className="flex mr-3 sm:mr-6 relative">
           <Sidebar />
-        </div>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/create-campaign" element={<CreateCampaign />} />
+            <Route exact path="/" element={<Home />} />
+            <Route exact path="/create-campaign" element={<CreateCampaign />} />
             <Route path="/campaigns/:id" element={<CampaignDetails />} />
-            <Route path="/withdraw" element={<Withdraw />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route exact path="/withdraw" element={<Withdraw />} />
+            <Route exact path="/profile" element={<Profile />} />
           </Routes>
         </Router>
       </Provider>

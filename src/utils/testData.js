@@ -3,11 +3,12 @@ export const testCampaingCards = [
         campaignId: 0,
         title: 'Campaign 1',
         image: 'https://t4.ftcdn.net/jpg/00/97/58/97/360_F_97589769_t45CqXyzjz0KXwoBZT9PRaWGHRk5hQqQ.jpg',
-        owner: 'Arantuil',
+        owner: 'User',
         description: 'Test campaign description',
         target: 100,
         amountCollected: 40,
-        deadline: 1690511920000
+        deadline: 1690511920000,
+        funders: {'0x4873894723845': 5.1, '0x59137451875': 2.7, '0x5193dsf15': 1.9}
     },
     {
         campaignId: 1,
@@ -17,7 +18,8 @@ export const testCampaingCards = [
         description: 'Test campaign description',
         target: 100,
         amountCollected: 68.456,
-        deadline: 1690511920000
+        deadline: 1690511920000,
+        funders: {'0x4873894723845': 5.1, '0x59137451875': 2.7, '0x5193dsf15': 1.9}
     },
     {
         campaignId: 2,
@@ -27,7 +29,8 @@ export const testCampaingCards = [
         description: 'Test campaign description',
         target: 100,
         amountCollected: 20,
-        deadline: 1690511920000
+        deadline: 1690511920000,
+        funders: {'0x4873894723845': 5.1, '0x59137451875': 2.7, '0x5193dsf15': 1.9}
     },
     {
         campaignId: 3,
@@ -37,6 +40,18 @@ export const testCampaingCards = [
         description: 'Test campaign description lorem ipsum test text words',
         target: 100,
         amountCollected: 410,
-        deadline: 1660511920000
+        deadline: 1660511920000,
+        funders: {}
+    },
+    {
+        campaignId: 4,
+        title: 'Tree planting initiative',
+        image: 'https://nationaltoday.com/wp-content/uploads/2022/05/7-Tree-Day-1200x834.jpg.webp',
+        owner: 'Arantuil',
+        description: 'This campaign is to gather funding for planting 100 trees.',
+        target: 150,
+        amountCollected: 10,
+        deadline: 1694511920000,
+        funders: {'0x4873894723845': 5.1, '0x59137451875': 2.7, '0x5193dsf15': 1.9}
     }
 ];

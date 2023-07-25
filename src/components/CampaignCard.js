@@ -7,7 +7,7 @@ const CampaignCard = ({ id, styles, title, image, owner, description, target, am
 
     return (
         <div
-            className="w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30] cursor-pointer"
+            className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30] cursor-pointer"
             onClick={() => {navigate('campaigns/'+String(id))} }
         >   
         { daysLeft(deadline) > 0 ? (
@@ -34,28 +34,28 @@ const CampaignCard = ({ id, styles, title, image, owner, description, target, am
 
             <div className="flex flex-col p-4">
                 <div className="block">
-                    <h3 className="font-epilogue font-semibold text-[16px] text-white text-left leading-[26px] truncate">
+                    <h3 className="font-semibold text-[16px] text-white text-left leading-[26px] truncate">
                         {title}
                     </h3>
-                    <p className="mt-[5px] font-epilogue font-normal text-[#808191] text-left leading-[18px] truncate">
+                    <p className="mt-[5px] font-normal text-[#808191] text-left leading-[20px] truncate">
                         {description}
                     </p>
                 </div>
 
                 <div className="flex justify-between flex-wrap mt-[15px] gap-2">
                     <div className="flex flex-col">
-                        <h4 className="font-epilogue font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                        <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
                             {Math.round(amountCollected * 100) / 100} EWT
                         </h4>
-                        <p className="mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] text-[#808191] sm:max-w[120px] truncate">
+                        <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                             Raised out of {target} EWT
                         </p>
                     </div>
                     <div className="flex flex-col">
-                        <h4 className="font-epilogue font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                        <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
                             {daysLeft(deadline)}
                         </h4>
-                        <p className="mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] text-[#808191] sm:max-w[120px] truncate">
+                        <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                             Days Left
                         </p>
                     </div>
@@ -68,7 +68,7 @@ const CampaignCard = ({ id, styles, title, image, owner, description, target, am
                             className="w-1/2 h-1/2 object-contain"
                         />
                     </div>
-                    <p className="flex-1 font-epilogue font-normal text-[12px] text-[#808191] truncate">
+                    <p className="flex-1 font-normal text-[12px] text-[#808191] truncate">
                         By <span className="text-[#b2b3bd]">{owner}</span>
                     </p>
                 </div>

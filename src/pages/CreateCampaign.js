@@ -47,10 +47,12 @@ const CreateCampaign = () => {
     };
 
     return (
-        <div className="rounded-xl justify-start w-full mt-20 bg-[#282945] flex items-center flex-col sm:p-10 p-4">
+        <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20 xl:px-44 2xl:px-72 
+        xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
+        bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
             {isloading && <Loader />}
             <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#44BDD0] rounded-[10px]">
-                <h1 className="font-epilogue font-bold text-[18px] sm:text-[22px] leading-[38px] text-white">
+                <h1 className="font-bold text-[18px] sm:text-[22px] leading-[38px] text-white">
                     Start a crowdfund campaign
                 </h1>
             </div>
@@ -75,20 +77,20 @@ const CreateCampaign = () => {
                     />
                 </div>
                 <FormField
-                    labelName="Story *"
-                    placeholder="write your story"
+                    labelName="Description *"
+                    placeholder="write your campaign's description"
                     isTextArea
                     value={form.description}
                     handleChange={(e) => handleFormFieldChange("description", e)}
                 />
 
-                <div className="w-full flex justify-center items-center p-4 bg-[#8C6DFD] h-[120px] rounded-[10px]">
+                <div className="w-full flex justify-center items-center p-4 bg-[#8C6DFD] h-[100px] rounded-[10px]">
                     <img
                         src={money}
                         alt="money"
                         className="w-[40px] h-[40px] object-contain"
                     />
-                    <h4 className="font-epilogue font-bold text-[18px] sm:text-[22px] text-white ml-[20px]">
+                    <h4 className="font-bold text-[18px] sm:text-[22px] text-white ml-[20px]">
                         You will get 95% of the final raised amount
                     </h4>
                 </div>
@@ -115,11 +117,12 @@ const CreateCampaign = () => {
                     value={form.image}
                     handleChange={(e) => handleFormFieldChange("image", e)}
                 />
+                <p className='text-[#808191] text-[12px]'>For best image compatibility: use a horizontal rectangle image where the main content is mostly in the middle of the image, also make sure the image url is a direct url to the image.</p>
                 <div className="flex justify-center items-center mt-[30px]">
                     <CustomButton
                         btnType="submit"
                         title="Submit new campaign"
-                        styles="bg-[#1dc071]"
+                        styles="bg-[#1dc071] h-[50px]"
                     />
                 </div>
             </form>

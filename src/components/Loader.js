@@ -8,7 +8,7 @@ const Loader = () => {
                 alt="loader"
                 className="w-[100px] h-[100px] object-contain"
             />
-            <p className="mt-[20px] font-epilogue font-bold text-[20px] text-center text-white">
+            <p className="mt-[20px] font-bold text-[20px] text-center text-white">
                 {" "}
                 Transaction in Progress Please Wait...
             </p>

@@ -1,12 +1,23 @@
-const CustomButton = ({ btnType, title, handleClick, styles }) => {
+const CustomButton = ({ disabled, btnType, title, handleClick, styles }) => {
     return (
-        <button
-            type={btnType}
-            className={`${styles} font-epilogue font-semibold text-[14px] sm:text-[16px] text-white min-h-[52px] px-4 rounded-xl`}
-            onClick={handleClick}
-        >
-            {title}
-        </button>
+        disabled === true ? (
+            <button
+                disabled={disabled}
+                type={btnType}
+                className={`${styles} font-semibold text-[14px] text-white px-4 rounded-xl`}
+                onClick={handleClick}
+            >
+                {title}
+            </button>
+        ) : (
+            <button
+                type={btnType}
+                className={`${styles} font-semibold text-[14px] text-white px-4 rounded-xl`}
+                onClick={handleClick}
+            >
+                {title}
+            </button>
+        )
     );
 };
 
