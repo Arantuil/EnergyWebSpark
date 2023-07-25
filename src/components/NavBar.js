@@ -7,6 +7,7 @@ import { fetchData } from '../redux/data/dataActions';
 import { testCampaingCards } from '../utils/testData';
 import { createCampaign, dashboard, withdraw, logo, menu, search, profile, profileGray } from "../assets";
 import { debounce } from 'lodash';
+import MetamaskAccountIcon from './MetamaskAccountIcon';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -111,11 +112,7 @@ const Navbar = () => {
                 ) : (
                     <Link className='flex items-center active:brightness-105' to="/profile">
                         <div className="h-full aspect-square rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
-                            <img
-                                src={profile}
-                                alt="user"
-                                className="w-[60%] h-[60%] object-contain"
-                            />
+                            <MetamaskAccountIcon address={blockchain.account} />
                         </div>
                     </Link>
                 )}
