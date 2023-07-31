@@ -22,8 +22,6 @@ const Navbar = () => {
         setSearchResults(results);
     };
 
-    console.log(searchResults)
-
     // Debounce the search to prevent excessive calls while typing
     const debouncedSearch = debounce(doSearch, 200);
 
@@ -40,6 +38,7 @@ const Navbar = () => {
 
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
+    const bcdata = useSelector((state) => state.data);
 
     const getData = () => {
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
@@ -51,7 +50,8 @@ const Navbar = () => {
         getData();
     }, [])
 
-    console.log(blockchain.account)
+    //console.log(blockchain)
+    console.log(bcdata)
 
 
     return (
@@ -86,11 +86,11 @@ const Navbar = () => {
                     />
                 </div>
             </div>
-            <div className="flex gap-1 relative ml-auto mr-0">
+            <div className="flex gap-1 relative xs:ml-auto mr-0">
                 <CustomButton
                     btnType="button"
                     title={blockchain.account ? "Create a campaign" : "Connect"}
-                    styles={blockchain.account ? "active:brightness-105 bg-[#8C6DFD] xs:mr-1 mr-2 sm:mr-4" : "animate-pulseSlow active:brightness-105 bg-[#8c6dfd] xs:mr-1 mr-2 sm:mr-4"}
+                    styles={blockchain.account ? "2xs:text-[12px] 3xs:text-[10px] 2xs:px-2 active:brightness-105 bg-[#8C6DFD] 2xs:mr-0 xs:mr-1 mr-2 sm:mr-4" : "2xs:text-[12px] 3xs:text-[10px] 2xs:px-2 animate-pulseSlow active:brightness-105 bg-[#8c6dfd] 2xs:mr-0 xs:mr-1 mr-2 sm:mr-4"}
                     handleClick={() => {
                         if (blockchain.account) navigate("create-campaign");
                         else {
@@ -112,7 +112,7 @@ const Navbar = () => {
                 ) : (
                     <Link className='flex items-center active:brightness-105' to="/profile">
                         <div className="h-full aspect-square rounded-full bg-[#282945] flex justify-center items-center cursor-pointer">
-                            <MetamaskAccountIcon address={blockchain.account} />
+                            <MetamaskAccountIcon address={blockchain.account} size={32} />
                         </div>
                     </Link>
                 )}

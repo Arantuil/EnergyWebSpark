@@ -1,6 +1,8 @@
 const initialState = {
   loading: false,
   account: "",
+  numberOfCampaigns: null,
+  feePoints: null,
   error: false,
   errorMsg: "",
 };
@@ -19,6 +21,8 @@ const dataReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         account: action.payload.account,
+        numberOfCampaigns: action.payload.numberOfCampaigns,
+        feePoints: action.payload.feePoints,
         error: false,
         errorMsg: "",
       };

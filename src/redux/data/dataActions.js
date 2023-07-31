@@ -26,14 +26,20 @@ export const fetchData = () => {
     dispatch(fetchDataRequest());
     try {
       let account = await store.getState()["blockchain"]["account"];
-      //let earned = await store
-      //  .getState()
-      //  .blockchain.smartContract.methods.earned(account)
-      //  .call();
-
+      let numberOfCampaigns = await store
+        .getState()
+        .blockchain.smartContract.methods.numberOfCampaigns()
+        .call();
+      let feePoints = await store
+        .getState()
+        .blockchain.smartContract.methods.feePoints()
+        .call();
+      
       dispatch(
         fetchDataSuccess({
-          account
+          account,
+          numberOfCampaigns,
+          feePoints
         })
       );
     } catch (err) {

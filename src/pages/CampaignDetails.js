@@ -1,20 +1,21 @@
 import { calculateBarPercentage } from "../utils";
-import { profile } from "../assets";
 import { testCampaingCards } from '../utils/testData';
 import CustomButton from "../components/CustomButton";
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { useParams } from 'react-router-dom';
+import MetamaskAccountIcon from '../components/MetamaskAccountIcon';
 
 const CampaignDetails = () => {
     const { id } = useParams();
-    
-    let funderEntries = []
-    useEffect(() => {
-        console.log(id);
-        let fundersList = testCampaingCards[id].funders
-        funderEntries = Object.entries(fundersList);    
+
+    const [funderEntries, setFunderEntries] = useState([]);
+    useEffect(() => {        
+        let sortedFunderEntries = Object.entries(testCampaingCards[id].funders).sort((a, b) => b[1] - a[1]);
+        setFunderEntries(sortedFunderEntries);  
     }, [id]);
+
+    console.log(funderEntries)
 
     const [fundButtonOn, setFundButtonOn] = useState(false);
     const [amount, setAmount] = useState(0);
@@ -74,6 +75,16 @@ const CampaignDetails = () => {
         });
     }, [makeShot]);
 
+    const truncateAddress = (address, charsToShow) => {
+        if (!address) return '';
+        const prefix = address.substring(0, charsToShow);
+        const suffix = address.substring(address.length - charsToShow);
+        return `${prefix}...${suffix}`;
+    };
+
+    const [showingAllEntries, setShowingAllEntries] = useState(false);
+    console.log(showingAllEntries)
+
     async function handleDonate() {
         console.log('test fund button')
         fire()
@@ -113,18 +124,25 @@ const CampaignDetails = () => {
                             Creator
                         </h4>
                         <div className="mt-[20px] flex flex-row items-center flex-wrap gap-[14px]">
-                            <div className="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#2c2f32] cursor-pointer">
-                                <img
-                                    src={profile}
-                                    alt="user"
-                                    className="w-[60%] h-[60%] object-contain"
-                                />
+                            <div className="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#2c2f32]">
+                                <MetamaskAccountIcon size={32} address={testCampaingCards[id].owner} />
                             </div>
                             <div>
                                 <h4 className="font-semibold text-[14px] text-white break-all">
-                                    {testCampaingCards[id].owner}
+                                    {testCampaingCards[id].username}<span className='text-[#808191]'> - {truncateAddress(testCampaingCards[id].owner, 5)}</span>
                                 </h4>
                             </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 className="font-semibold text-[18px] text-white uppercase">
+                            Title
+                        </h2>
+                        <div className="mt-[20px]">
+                            <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
+                                {testCampaingCards[id].title}
+                            </p>
                         </div>
                     </div>
 
@@ -145,26 +163,62 @@ const CampaignDetails = () => {
                             Funders
                         </h4>
                         <div className="mt-[20px] flex flex-col gap-4">
-                            {funderEntries.length > 0 ? (
-                                funderEntries.map((funder) => (
+                        {funderEntries.length > 0 ? (
+
+                        showingAllEntries === false ? (
+                            funderEntries.slice(0, 3).map((funder) => (
                                     <div
                                         className="flex justify-between items-center gap-4"
                                     >
-                                        <p className="font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
-                                            {funder[0]}
-                                        </p>
+                                        <MetamaskAccountIcon size={22} address={funder[0]} />
+                                        <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                            {truncateAddress(funder[0],5)}
+                                        </a>
                                         <p className="font-normal text-[16px] text-[#808191] leading-[26px] break-all">
                                             {funder[1]} EWT
                                         </p>
                                     </div>
                                 ))
-                            ) : (
-                                <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                    No funders yet. Be the first one
-                                </p>
-                            )}
+                                ) : (
+                                    funderEntries.map((funder) => (
+                                        <div
+                                            className="flex justify-between items-center gap-4"
+                                        >
+                                            <MetamaskAccountIcon size={22} address={funder[0]} />
+                                            <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                {truncateAddress(funder[0],5)}
+                                            </a>
+                                            <p className="font-normal text-[16px] text-[#808191] leading-[26px] break-all">
+                                                {funder[1]} EWT
+                                            </p>
+                                        </div>
+                                    ))
+                                    
+                                )) : (
+                                    <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
+                                        No funders yet. Be the first one
+                                    </p>    
+                                )}
+
+                                {showingAllEntries === false ? (
+                                    <button
+                                        className="text-[#8C6DFD] hover:text-white cursor-pointer font-normal text-[16px] leading-[26px]"
+                                        onClick={() => setShowingAllEntries(true)}
+                                    >
+                                        Show all funders
+                                    </button>
+                                ): (<></>)}
+
+                                {showingAllEntries === true ? (
+                                    <button
+                                        className="text-[#8C6DFD] hover:text-white cursor-pointer font-normal text-[16px] leading-[26px]"
+                                        onClick={() => setShowingAllEntries(false)}
+                                    >
+                                        Show less funders
+                                    </button>
+                                ) : (<></>)}
+                            </div>
                         </div>
-                    </div>
 
                 </div>
                 <div className="flex-1">
@@ -176,7 +230,7 @@ const CampaignDetails = () => {
                                 type="number"
                                 placeholder="1 EWT"
                                 step="0.1"
-                                className="w-full py-[10px] sm:px-[20px] px-[15] outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
+                                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
                                 onChange={setNewAmount}
                             />
                             {fundButtonOn === true ? (
