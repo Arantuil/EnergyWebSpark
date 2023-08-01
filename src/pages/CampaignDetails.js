@@ -11,8 +11,10 @@ const CampaignDetails = () => {
 
     const [funderEntries, setFunderEntries] = useState([]);
     useEffect(() => {        
-        let sortedFunderEntries = Object.entries(testCampaingCards[id].funders).sort((a, b) => b[1] - a[1]);
-        setFunderEntries(sortedFunderEntries);  
+        try {
+            let sortedFunderEntries = Object.entries(testCampaingCards[id].funders).sort((a, b) => b[1] - a[1]);
+            setFunderEntries(sortedFunderEntries);  
+        } catch {console.log('there are no funders yet to this campaign or there is an unexpected error')}
     }, [id]);
 
     console.log(funderEntries)
