@@ -4,20 +4,29 @@ import CustomButton from "./CustomButton";
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchData } from '../redux/data/dataActions';
-import { testCampaingCards } from '../utils/testData';
 import { createCampaign, dashboard, withdraw, logo, menu, search, profile, profileGray } from "../assets";
 import { debounce } from 'lodash';
 import MetamaskAccountIcon from './MetamaskAccountIcon';
+
+import { db } from '../firebase';
+import { onValue, ref } from 'firebase/database';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
 
-    let data = testCampaingCards;
+    const [sortedCampaigns, setSortedCampaigns] = useState([])
+    useEffect(() => {
+        onValue(ref(db), snapshot => {
+            const data = snapshot.val();
+            setSortedCampaigns(data)
+        });
+    }, []);
+
     const doSearch = (term) => {
-        const results = data.filter((item) =>
-            item.title.toLowerCase().includes(term.toLowerCase()) || item.owner.toLowerCase().includes(term.toLowerCase())
+        const results = sortedCampaigns.filter((item) =>
+            item.title.toLowerCase().includes(term.toLowerCase()) || item.username.toLowerCase().includes(term.toLowerCase())
         );
         setSearchResults(results);
     };

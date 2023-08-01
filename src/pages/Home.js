@@ -3,8 +3,6 @@ import { connect } from '../redux/blockchain/blockchainActions';
 import { fetchData } from '../redux/data/dataActions';
 import { useState, useEffect } from 'react';
 import CampaignCard from '../components/CampaignCard';
-import { testCampaingCards } from '../utils/testData';
-
 import { CiCalendarDate } from 'react-icons/ci';
 import { BiUpArrowAlt } from 'react-icons/bi';
 import { BiDownArrowAlt } from 'react-icons/bi';
@@ -13,8 +11,19 @@ import { GoListOrdered } from 'react-icons/go';
 import { TbLetterA } from 'react-icons/tb';
 import { TbLetterZ } from 'react-icons/tb';
 
+import { db } from '../firebase';
+import { onValue, ref } from 'firebase/database';
+
 const Home = () => {
     /* global BigInt */
+    const [sortedCampaigns, setSortedCampaigns] = useState([])
+    useEffect(() => {
+        onValue(ref(db), snapshot => {
+            const data = snapshot.val();
+            setSortedCampaigns(data)
+        });
+    }, []);
+
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
     const bcdata = useSelector((state) => state.data);
@@ -70,31 +79,30 @@ const Home = () => {
     }
     // -----------------------------------------
 
-    const [sortedCampaigns, setSortedCampaigns] = useState(testCampaingCards)
     function sortDeadlineUp() {
-        const sorted = [...testCampaingCards];
+        const sorted = [...sortedCampaigns];
         sorted.sort((a, b) => a.deadline - b.deadline);
         setSortedCampaigns(sorted);
     };
 
     function sortDeadlineDown() {
-        const sorted = [...testCampaingCards];
+        const sorted = [...sortedCampaigns];
         sorted.sort((a, b) => b.deadline - a.deadline);
         setSortedCampaigns(sorted);
     };
 
     function sortDeadlineReset() {
-        setSortedCampaigns(testCampaingCards);
+        setSortedCampaigns(sortedCampaigns);
     }
 
     function sortTitleAtoZ() {
-        const sorted = [...testCampaingCards];
+        const sorted = [...sortedCampaigns];
         sorted.sort((a, b) => a.title.localeCompare(b.title));
         setSortedCampaigns(sorted);
     };
 
     function sortTitleZtoA() {
-        const sorted = [...testCampaingCards];
+        const sorted = [...sortedCampaigns];
         sorted.sort((a, b) => b.title.localeCompare(a.title));
         setSortedCampaigns(sorted);
     };

@@ -1,15 +1,24 @@
-import { testCampaingCards } from '../utils/testData';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import CampaignCard from '../components/CampaignCard';
+
+import { db } from '../firebase';
+import { onValue, ref } from 'firebase/database';
 
 const Profile = () => {
     const blockchain = useSelector((state) => state.blockchain);
 
     const [filteredCampaigns, setFilteredCampaigns] = useState([])
     useEffect(() => {
-        if (blockchain.account !== "" && blockchain.account !== null) {
-            setFilteredCampaigns(testCampaingCards.filter(campaign => (campaign.owner).toLowerCase() === (blockchain.account).toLowerCase()));
+        onValue(ref(db), snapshot => {
+            const data = snapshot.val();
+            setFilteredCampaigns(data)
+        });
+    }, []);
+
+    useEffect(() => {
+        if (blockchain.account !== "" && blockchain.account !== null && filteredCampaigns.length !== 0) {
+            setFilteredCampaigns(filteredCampaigns.filter(campaign => (campaign.owner).toLowerCase() === (blockchain.account).toLowerCase()));
         }
     }, [blockchain])
 
