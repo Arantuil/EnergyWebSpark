@@ -5,6 +5,8 @@ const FormField = ({
     isTextArea,
     value,
     handleChange,
+    disabled,
+    styles
 }) => {
     return (
         <label className="flex-1 w-full flex flex-col">
@@ -15,22 +17,24 @@ const FormField = ({
             )}
             {isTextArea ? (
                 <textarea
+                    disabled={disabled}
                     required
                     value={value}
                     onChange={handleChange}
                     rows={10}
                     placeholder={placeholder}
-                    className="min-h-[55px] py-4 sm:px-6 px-4 outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[14px] placeholder:text-[#75787e] rounded-lg sm:min-w-[300px]"
+                    className={`${styles} min-h-[55px] py-4 sm:px-6 px-4 outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[14px] placeholder:text-[#75787e] rounded-lg sm:min-w-[300px]`}
                 />
             ) : (
                 <input
+                    disabled={disabled}
                     required
                     value={value}
                     onChange={handleChange}
                     type={inputType}
                     step="0.1"
                     placeholder={placeholder}
-                    className="py-4 sm:px-6 px-4 outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[14px] placeholder:text-[#75787e] rounded-lg sm:min-w-[300px]"
+                    className={`${styles} py-4 sm:px-6 px-4 outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[14px] placeholder:text-[#75787e] rounded-lg sm:min-w-[300px]`}
                 />
             )}
         </label>

@@ -6,18 +6,27 @@ import ReactCanvasConfetti from 'react-canvas-confetti';
 import { useParams } from 'react-router-dom';
 import MetamaskAccountIcon from '../components/MetamaskAccountIcon';
 
+import { db } from '../firebase';
+import { onValue, ref } from 'firebase/database';
+
 const CampaignDetails = () => {
     const { id } = useParams();
+
+    const [sortedCampaigns, setSortedCampaigns] = useState([])
+    useEffect(() => {
+        onValue(ref(db), snapshot => {
+            const data = snapshot.val();
+            setSortedCampaigns(data)
+        });
+    }, []);
 
     const [funderEntries, setFunderEntries] = useState([]);
     useEffect(() => {        
         try {
-            let sortedFunderEntries = Object.entries(testCampaingCards[id].funders).sort((a, b) => b[1] - a[1]);
+            let sortedFunderEntries = Object.entries(sortedCampaigns[id].funders).sort((a, b) => b[1] - a[1]);
             setFunderEntries(sortedFunderEntries);  
         } catch {console.log('there are no funders yet to this campaign or there is an unexpected error')}
-    }, [id]);
-
-    console.log(funderEntries)
+    }, [id, sortedCampaigns]);
 
     const [fundButtonOn, setFundButtonOn] = useState(false);
     const [amount, setAmount] = useState(0);
@@ -161,17 +170,20 @@ const CampaignDetails = () => {
                     </div>
 
                     <div>
+                        {showingAllEntries === false && funderEntries.length > 0 ? (
+                        <h4 className="font-semibold text-[18px] text-white">
+                            <span className='uppercase'>Funders </span><span className='font-normal text-[16px] text-[#808191]'>(only showing top 3 funders)</span>
+                        </h4>
+                        ) : (
                         <h4 className="font-semibold text-[18px] text-white uppercase">
                             Funders
                         </h4>
+                        )}
                         <div className="mt-[20px] flex flex-col gap-4">
                         {funderEntries.length > 0 ? (
-
-                        showingAllEntries === false ? (
-                            funderEntries.slice(0, 3).map((funder) => (
-                                    <div
-                                        className="flex justify-between items-center gap-4"
-                                    >
+                            showingAllEntries === false ? (
+                                funderEntries.slice(0, 3).map((funder) => (
+                                    <div className="flex justify-between items-center gap-4">
                                         <MetamaskAccountIcon size={22} address={funder[0]} />
                                         <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
                                             {truncateAddress(funder[0],5)}
@@ -183,9 +195,7 @@ const CampaignDetails = () => {
                                 ))
                                 ) : (
                                     funderEntries.map((funder) => (
-                                        <div
-                                            className="flex justify-between items-center gap-4"
-                                        >
+                                        <div className="flex justify-between items-center gap-4">
                                             <MetamaskAccountIcon size={22} address={funder[0]} />
                                             <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
                                                 {truncateAddress(funder[0],5)}
@@ -195,7 +205,6 @@ const CampaignDetails = () => {
                                             </p>
                                         </div>
                                     ))
-                                    
                                 )) : (
                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
                                         No funders yet. Be the first one

@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 // pages
 import Home from './pages/Home';
 import CreateCampaign from './pages/CreateCampaign';
+import EditCampaign from './pages/EditCampaign';
 import CampaignDetails from './pages/CampaignDetails';
 import Withdraw from './pages/Withdraw';
 import Profile from './pages/Profile';
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/create-campaign" element={<CreateCampaign />} />
+            <Route path="/edit-campaign/:id" element={<EditCampaign />} />
             <Route path="/campaigns/:id" element={<CampaignDetails />} />
             <Route exact path="/withdraw" element={<Withdraw />} />
             <Route exact path="/profile" element={<Profile />} />

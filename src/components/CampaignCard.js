@@ -9,11 +9,17 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
 
     const currentTimestamp = Date.now();
 
+    function withdrawFundsFromCampaign(idOfCampaign) {
+        console.log(idOfCampaign)
+    }
+
+    function editCampaign(idOfCampaign) {
+        navigate('/edit-campaign/' + String(idOfCampaign))
+    }
+
     return (
         isProfilePage === true ? (
-            <div
-                className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]"
-            >
+            <div className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]">
                 {daysLeft(deadline) > 0 ? (
                     <div className='absolute ml-2 mt-2 rounded-full w-3 h-3 bg-green-500'></div>
                 ) : (
@@ -72,17 +78,27 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                 Options
                             </h4>
                             <div className="my-[5px] flex flex-row w-full">
-                                <button className="hover:brightness-110 bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
-                                    Withdraw
-                                </button>
-                                {deadline > currentTimestamp ? (
-                                <button className="hover:brightness-110 bg-[#EF4444] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
-                                    Delete
-                                </button>
+                            {deadline > currentTimestamp ? (
+                                    <button className="hover:brightness-110 bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        Withdraw
+                                    </button>
                                 ) : (
-                                <button className="hover:brightness-110 bg-[#EF4444] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
-                                    Ended
-                                </button>
+                                    <button className="hover:brightness-110 bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        Withdraw
+                                    </button>
+                                )}
+                                {deadline > currentTimestamp ? (
+                                    <button 
+                                    onClick={() => {editCampaign(id)}}
+                                    className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        Edit
+                                    </button>
+                                ) : (
+                                    <button 
+                                    onClick={() => {withdrawFundsFromCampaign(id)}}
+                                    className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        Ended
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -157,7 +173,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center mt-[20px] gap-2 ">
+                    <div className="flex items-center mt-[20px] gap-2">
                         <div className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-[#13131a}">
                             <img
                                 src={profile}

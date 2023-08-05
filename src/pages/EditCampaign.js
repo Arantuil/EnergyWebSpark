@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { money } from "../assets";
 import CustomButton from "../components/CustomButton";
 import FormField from "../components/FormField";
@@ -9,10 +9,42 @@ import { checkIfImage } from "../utils";
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useSelector, useDispatch } from 'react-redux';
 
-const CreateCampaign = () => {
+import { db } from '../firebase';
+import { onValue, ref } from 'firebase/database';
+
+const EditCampaign = () => {
+    const { id } = useParams();
+
     const blockchain = useSelector((state) => state.blockchain);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    function unixTimestampToYYYYMMDD(unixTimestamp) {
+        const date = new Date(unixTimestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    const [currentCampaign, setCurrentCampaign] = useState([])
+    useEffect(() => {
+        onValue(ref(db), snapshot => {
+            const data = snapshot.val();
+            setCurrentCampaign(data[id])
+        });
+    }, [id]);
+
+    useEffect(() => {
+        setForm({
+            name: currentCampaign.username,
+            title: currentCampaign.title,
+            description: currentCampaign.description,
+            target: currentCampaign.target,
+            deadline: unixTimestampToYYYYMMDD(currentCampaign.deadline),
+            image: currentCampaign.image,
+        });
+    }, [currentCampaign])
 
     //const { createCampaign } = useStateContext();
     const [isloading, setIsloading] = useState(false);
@@ -50,7 +82,6 @@ const CreateCampaign = () => {
         console.log(form);
     };
 
-
     return (
         blockchain.account === "" || blockchain.account === null ? (
         <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20 xl:px-44 2xl:px-72 
@@ -65,7 +96,7 @@ const CreateCampaign = () => {
                 <CustomButton
                     btnType="button"
                     title="Connect"
-                    styles="text-lg sm:text-xl md:text-2xl flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#44BDD0] rounded-[10px] animate-pulseSlow active:brightness-105 bg-[#8c6dfd] mx-auto"
+                    styles="text-lg sm:text-xl md:text-2xl flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#44BDD0] rounded-[10px] animate-pulseSlow active:brightness-105 bg-[#8c6dfd] xs:mr-1 mr-2 sm:mr-4"
                     handleClick={() => {
                         dispatch(connect());
                     }}
@@ -77,9 +108,9 @@ const CreateCampaign = () => {
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
         bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
             {isloading && <Loader />}
-            <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#1dc071] rounded-[10px]">
+            <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#44BDD0] rounded-[10px]">
                 <h1 className="font-bold text-[18px] sm:text-[22px] leading-[38px] text-white">
-                    Start a crowdfunding campaign
+                    Edit your crowdfunding campaign
                 </h1>
             </div>
             <form
@@ -88,12 +119,13 @@ const CreateCampaign = () => {
             >
                 <div className="flex flex-wrap gap-[40px]">
                     <FormField
-                        disabled={false}
+                        disabled={true}
                         labelName="Your Name *"
                         placeholder="Username"
                         inputType="text"
                         value={form.name}
                         handleChange={(e) => handleFormFieldChange("name", e)}
+                        styles={'text-[#75787e]'}
                     />
                     <FormField
                         disabled={false}
@@ -153,8 +185,8 @@ const CreateCampaign = () => {
                 <div className="flex justify-center items-center mt-[30px]">
                     <CustomButton
                         btnType="submit"
-                        title="Submit new campaign"
-                        styles="bg-[#1dc071] h-[50px]"
+                        title="Submit edited campaign"
+                        styles="bg-[#44BDD0] h-[50px]"
                     />
                 </div>
             </form>
@@ -163,4 +195,4 @@ const CreateCampaign = () => {
     );
 };
 
-export default CreateCampaign;
+export default EditCampaign;
