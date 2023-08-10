@@ -1,32 +1,69 @@
 import { calculateBarPercentage } from "../utils";
-import { testCampaingCards } from '../utils/testData';
 import CustomButton from "../components/CustomButton";
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { useParams } from 'react-router-dom';
 import MetamaskAccountIcon from '../components/MetamaskAccountIcon';
+import { useSelector, useDispatch } from 'react-redux';
+import { connect } from '../redux/blockchain/blockchainActions';
 
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
 
 const CampaignDetails = () => {
+    const blockchain = useSelector((state) => state.blockchain);
+    const dispatch = useDispatch();
+
+    const [CONFIG, SET_CONFIG] = useState({
+        CONTRACT_ADDRESS: "",
+        NETWORK: {
+            NAME: "",
+            SYMBOL: "",
+            ID: null
+            },
+            GAS_LIMIT: null
+    });
+
+    const getConfig = async () => {
+        const configResponse = await fetch('/config/config.json', {
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+        const config = await configResponse.json();
+        SET_CONFIG(config);
+    };
+
+    useEffect(() => {
+        getConfig();
+    }, []);
+
+    // -----------------------
+
     const { id } = useParams();
 
     const [sortedCampaigns, setSortedCampaigns] = useState([])
     useEffect(() => {
         onValue(ref(db), snapshot => {
             const data = snapshot.val();
-            setSortedCampaigns(data)
+            if (data) {
+                const campaignsArray = Object.values(data);
+                const targetCampaign = campaignsArray.find(campaign => campaign.campaignId === parseInt(id));
+                setSortedCampaigns(targetCampaign);
+            }
         });
-    }, []);
+    }, [id]);
+
+    console.log(sortedCampaigns)
 
     const [funderEntries, setFunderEntries] = useState([]);
     useEffect(() => {        
-        try {
-            let sortedFunderEntries = Object.entries(sortedCampaigns[id].funders).sort((a, b) => b[1] - a[1]);
+        if (sortedCampaigns.funders !== null && sortedCampaigns.funders !== undefined) {
+            let sortedFunderEntries = Object.entries(sortedCampaigns.funders).sort((a, b) => b[1] - a[1]);
             setFunderEntries(sortedFunderEntries);  
-        } catch {console.log('there are no funders yet to this campaign or there is an unexpected error')}
-    }, [id, sortedCampaigns]);
+        }
+    }, [sortedCampaigns]);
 
     const [fundButtonOn, setFundButtonOn] = useState(false);
     const [amount, setAmount] = useState(0);
@@ -94,22 +131,42 @@ const CampaignDetails = () => {
     };
 
     const [showingAllEntries, setShowingAllEntries] = useState(false);
-    console.log(showingAllEntries)
 
-    async function handleDonate() {
-        console.log('test fund button')
-        fire()
-    }
+    const [contributionInProcess, setContributionInProcess] = useState(false);
+    const handleDonate = () => {
+        setContributionInProcess(true);
+        blockchain.smartContract.methods
+            .contributeToCampaign(
+                            id
+                            )
+            .send({
+                gasPrice: 100000000,
+                to: CONFIG.CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: 1e13,
+            })
+            .then((receipt) => {
+                console.log(receipt)
+                setContributionInProcess(false);
+                fire()
+            })
+            .catch((error) => {
+                console.error(error);
+                setContributionInProcess(false);
+            });
+    };
 
     return (
         <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
         bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
+            
+            {sortedCampaigns !== [] && sortedCampaigns.length !== 0 ? (
             <div className='xl:px-auto xl:max-w-[900px]'>
             <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
                 <div className="flex-1 flex-col">
                     <img
-                        src={testCampaingCards[id].image}
+                        src={sortedCampaigns.image}
                         alt="campaign"
                         className="4xs:h-[150px] 3xs:h-[200px] 2xs:h-[250px] xs:h-[300px] h-[350px] sm:h-[400px] w-full object-cover rounded-xl"
                     />
@@ -118,8 +175,8 @@ const CampaignDetails = () => {
                             className="rounded absolute h-full bg-[#4acd8d]"
                             style={{
                                 width: `${calculateBarPercentage(
-                                    testCampaingCards[id].target,
-                                    testCampaingCards[id].amountCollected
+                                    sortedCampaigns.target,
+                                    sortedCampaigns.amountContributed/1e18
                                 )}%`,
                                 maxWidth: "100%",
                             }}
@@ -136,11 +193,11 @@ const CampaignDetails = () => {
                         </h4>
                         <div className="mt-[20px] flex flex-row items-center flex-wrap gap-[14px]">
                             <div className="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#2c2f32]">
-                                <MetamaskAccountIcon size={32} address={testCampaingCards[id].owner} />
+                                <MetamaskAccountIcon size={32} address={sortedCampaigns.owner} />
                             </div>
                             <div>
                                 <h4 className="font-semibold text-[14px] text-white break-all">
-                                    {testCampaingCards[id].username}<span className='text-[#808191]'> - {truncateAddress(testCampaingCards[id].owner, 5)}</span>
+                                    {sortedCampaigns.username}<span className='text-[#808191]'> - {truncateAddress(sortedCampaigns.owner, 5)}</span>
                                 </h4>
                             </div>
                         </div>
@@ -152,7 +209,7 @@ const CampaignDetails = () => {
                         </h2>
                         <div className="mt-[20px]">
                             <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                {testCampaingCards[id].title}
+                                {sortedCampaigns.title}
                             </p>
                         </div>
                     </div>
@@ -164,7 +221,7 @@ const CampaignDetails = () => {
 
                         <div className="mt-[20px] ">
                             <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                {testCampaingCards[id].description}
+                                {sortedCampaigns.description}
                             </p>
                         </div>
                     </div>
@@ -180,7 +237,7 @@ const CampaignDetails = () => {
                         </h4>
                         )}
                         <div className="mt-[20px] flex flex-col gap-4">
-                        {funderEntries.length > 0 ? (
+                        {funderEntries.length > 0 && funderEntries.length !== [] ? (
                             showingAllEntries === false ? (
                                 funderEntries.slice(0, 3).map((funder) => (
                                     <div className="flex justify-between items-center gap-4">
@@ -205,7 +262,8 @@ const CampaignDetails = () => {
                                             </p>
                                         </div>
                                     ))
-                                )) : (
+                                )
+                                ) : (
                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
                                         No funders yet. Be the first one
                                     </p>    
@@ -234,32 +292,57 @@ const CampaignDetails = () => {
                 </div>
                 <div className="flex-1">
                     <div className="flex flex-col p-4 bg-[#282945] rounded-[10px]">
-                        <div className="">
+                        <div className="w-[90%] mx-auto">
                             <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
-                            <input
-                                id='currentFundAmount'
-                                type="number"
-                                placeholder="1 EWT"
-                                step="0.1"
-                                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
-                                onChange={setNewAmount}
-                            />
-                            {fundButtonOn === true ? (
-                                <CustomButton
-                                    btnType="button"
-                                    title="Fund Campaign"
-                                    styles="w-full bg-[#4ACD8D] h-[60px] mt-[20px]"
-                                    handleClick={handleDonate}
-                                />
-                            ) : (
-                                <CustomButton
-                                disabled={true}
-                                btnType="button"
-                                title="Fund Campaign"
-                                styles="w-full bg-[#678191] h-[60px] mt-[20px]"
-                                handleClick={handleDonate}
-                                />
-                            )}
+                            <div className="relative">
+                                {sortedCampaigns.status === false ? (
+                                        <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(250,204,21,0.15)]">
+                                            <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign paused</p>
+                                        </div>
+                                    ) : (
+                                        <></>
+                                    )
+                                }
+                                <div>
+                                    <p className='text-white mb-[10px] text-[14px] text-center'>{Math.round(sortedCampaigns.amountContributed/1e18 * 100) / 100} EWT <span className='font-normal text-[#808191]'>Out of</span> {sortedCampaigns.target} EWT <span className='font-normal text-[#808191]'>collected (</span>{(sortedCampaigns.amountContributed / 1e18 / sortedCampaigns.target * 100).toFixed(2)}%<span className='font-normal text-[#808191]'>)</span></p>
+                                    <input
+                                        id='currentFundAmount'
+                                        type="number"
+                                        placeholder="1 EWT"
+                                        step="0.1"
+                                        className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
+                                        onChange={setNewAmount}
+                                    />
+                                    {fundButtonOn === true ? (
+                                        blockchain.account !== null && blockchain.account !== "" ? (
+                                        <CustomButton
+                                            btnType="button"
+                                            disabled={contributionInProcess}
+                                            title={`${contributionInProcess ? "Funding Campaign..." : "Fund Campaign"}`}
+                                            styles={`${contributionInProcess ? "bg-[rgba(74,205,141,0.5)]" : "bg-[#4ACD8D]"} w-full h-[60px] mt-[20px]`}
+                                            handleClick={handleDonate}
+                                        />
+                                        ) : (
+                                            <CustomButton
+                                            btnType="button"
+                                            title="Connect"
+                                            styles="w-full bg-[#8C6DFD] h-[60px] mt-[20px]"
+                                            handleClick={() => {
+                                                dispatch(connect());
+                                            }}
+                                        />
+                                        )
+                                    ) : (
+                                        <CustomButton
+                                        disabled={true}
+                                        btnType="button"
+                                        title="Fund Campaign"
+                                        styles="w-full bg-[#678191] h-[60px] mt-[20px]"
+                                        handleClick={handleDonate}
+                                        />
+                                    )}
+                                    </div>
+                            </div>
                             <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
                                 <h4 className="font-semibold text-[14px] leading-[22px] text-white">
                                     Back it just because you believe in it.
@@ -273,6 +356,10 @@ const CampaignDetails = () => {
                 </div>
             </div>
             </div>
+            ) : (
+                <></>
+            )}
+
         </div>
     );
 };

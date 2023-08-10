@@ -2,8 +2,9 @@ import { calculateBarPercentage, daysLeft } from "../utils";
 import { profile } from '../assets'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import SimpleSwitch from './SimpleSwitch';
 
-const CampaignCard = ({ id, styles, title, image, owner, username, description, target, amountCollected, deadline, isProfilePage }) => {
+const CampaignCard = ({ id, styles, title, image, owner, username, description, target, amountContributed, deadline, isProfilePage, status }) => {
     const navigate = useNavigate();
     const blockchain = useSelector((state) => state.blockchain);
 
@@ -20,10 +21,23 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
     return (
         isProfilePage === true ? (
             <div className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]">
-                {daysLeft(deadline) > 0 ? (
-                    <div className='absolute ml-2 mt-2 rounded-full w-3 h-3 bg-green-500'></div>
+                {daysLeft(deadline) > 0 && status === true ? (
+                    <div>
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-green-400'>
+                        </div>
+                    </div>
                 ) : (
-                    <div className='absolute ml-2 mt-2 rounded-full w-3 h-3 bg-red-500'></div>
+                    status === false ? (
+                        <div>
+                            <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-yellow-400'>
+                            </div>
+                        </div>
+                    ) : (
+                    <div>
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-red-400'>
+                        </div>
+                    </div>
+                    )
                 )}
                 <img
                     src={image}
@@ -36,7 +50,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                     <div style={{
                         width: `${calculateBarPercentage(
                             target,
-                            amountCollected
+                            amountContributed/1e18
                         )}%`,
                         maxWidth: "100%",
                     }}
@@ -55,9 +69,15 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
 
                     <div className="flex justify-between flex-wrap mt-[15px] gap-2">
                         <div className="flex flex-col">
-                            <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
-                                {Math.round(amountCollected * 100) / 100} EWT
-                            </h4>
+                            {amountContributed > 0 ? (
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    {Math.round(amountContributed/1e18 * 100) / 100} EWT
+                                </h4>
+                            ) : (
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    0 EWT
+                                </h4>
+                            )}
                             <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                 Raised out of {target} EWT
                             </p>
@@ -71,14 +91,14 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                             </p>
                         </div>
                     </div>
-                    
+
                     <div className="bg-[#262846] rounded-lg p-[3px] sm:p-[6px] flex items-center mt-[20px] gap-2 ">
                         <div className="w-full flex flex-col">
                             <h4 className="text-center font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
                                 Options
                             </h4>
                             <div className="my-[5px] flex flex-row w-full">
-                            {deadline > currentTimestamp ? (
+                                {deadline > currentTimestamp ? (
                                     <button className="hover:brightness-110 bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
                                         Withdraw
                                     </button>
@@ -88,15 +108,15 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     </button>
                                 )}
                                 {deadline > currentTimestamp ? (
-                                    <button 
-                                    onClick={() => {editCampaign(id)}}
-                                    className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                    <button
+                                        onClick={() => { editCampaign(id) }}
+                                        className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
                                         Edit
                                     </button>
                                 ) : (
-                                    <button 
-                                    onClick={() => {withdrawFundsFromCampaign(id)}}
-                                    className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                    <button
+                                        onClick={() => { withdrawFundsFromCampaign(id) }}
+                                        className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
                                         Ended
                                     </button>
                                 )}
@@ -104,7 +124,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         </div>
                     </div>
 
-                    <div className="flex items-center mt-[20px] gap-2 ">
+                    <div className="flex items-center mt-[20px] gap-2">
                         <div className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-[#13131a}">
                             <img
                                 src={profile}
@@ -115,18 +135,23 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         <p className="flex-1 font-normal text-[12px] text-[#808191] truncate">
                             By <span className="text-[#b2b3bd]">{username}</span>
                         </p>
+                        <SimpleSwitch status={status} campaignId={id} />
                     </div>
                 </div>
             </div>
-            ) : (
+        ) : (
             <div
                 className="hover:brightness-110 max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30] cursor-pointer"
                 onClick={() => { navigate('campaigns/' + String(id)) }}
             >
-                {daysLeft(deadline) > 0 ? (
-                    <div className='absolute ml-2 mt-2 rounded-full w-3 h-3 bg-green-500'></div>
+                {daysLeft(deadline) > 0 && status === true ? (
+                    <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-green-500'></div>
                 ) : (
-                    <div className='absolute ml-2 mt-2 rounded-full w-3 h-3 bg-red-500'></div>
+                    status === false ? (
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-yellow-400'></div>
+                    ) : (
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-red-500'></div>
+                    )
                 )}
                 <img
                     src={image}
@@ -138,7 +163,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                     <div style={{
                         width: `${calculateBarPercentage(
                             target,
-                            amountCollected
+                            amountContributed/1e18
                         )}%`,
                         maxWidth: "100%",
                     }}
@@ -157,9 +182,15 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
 
                     <div className="flex justify-between flex-wrap mt-[15px] gap-2">
                         <div className="flex flex-col">
-                            <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
-                                {Math.round(amountCollected * 100) / 100} EWT
-                            </h4>
+                            {amountContributed > 0 ? (
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    {Math.round(amountContributed/1e18 * 100) / 100} EWT
+                                </h4>
+                            ) : (
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    0 EWT
+                                </h4>
+                            )}
                             <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                 Raised out of {target} EWT
                             </p>

@@ -14,11 +14,17 @@ const Profile = () => {
 
     const [filteredCampaigns, setFilteredCampaigns] = useState([])
     useEffect(() => {
+        if (blockchain.account !== "" && blockchain.account !== null) {
         onValue(ref(db), snapshot => {
             const data = snapshot.val();
-            setFilteredCampaigns(data)
+            if (data) {
+                const campaignsArray = Object.values(data);
+                const filteredCampaigns = campaignsArray.filter(campaign => (campaign.owner).toLowerCase() === (blockchain.account).toLowerCase());
+                setFilteredCampaigns(filteredCampaigns);
+            }
         });
-    }, []);
+        }
+    }, [blockchain.account]);
 
     useEffect(() => {
         if (blockchain.account !== "" && blockchain.account !== null && filteredCampaigns.length !== 0) {
@@ -39,7 +45,7 @@ const Profile = () => {
             ) : (
                 <></>
             )}
-            {blockchain.acount !== "" && blockchain.account !== null ? (
+            {blockchain.acount !== "" && blockchain.account !== null && filteredCampaigns.length > 0 ? (
             <div className='mt-[20px] flex justify-center content-start flex-row flex-wrap'>
                 {filteredCampaigns.map((cardInfo) => (
                     <CampaignCard
@@ -50,9 +56,10 @@ const Profile = () => {
                         username={cardInfo.username}
                         description={cardInfo.description}
                         target={cardInfo.target}
-                        amountCollected={cardInfo.amountCollected}
+                        amountContributed={cardInfo.amountContributed}
                         deadline={cardInfo.deadline}
                         isProfilePage={true}
+                        status={cardInfo.status}
                     />
                 ))}
             </div>
