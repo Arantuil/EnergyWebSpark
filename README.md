@@ -1,1 +1,1 @@
-# Web interface for the ewc crowdfunding dapp
+# EnergySpark: Spark the change on EWC
