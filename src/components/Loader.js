@@ -6,11 +6,11 @@ const Loader = () => {
             <img
                 src={loader}
                 alt="loader"
-                className="w-[100px] h-[100px] object-contain"
+                className="w-[120px] h-[120px] object-contain"
             />
             <p className="mt-[20px] font-bold text-[20px] text-center text-white">
                 {" "}
-                Transaction in Progress Please Wait...
+                Transaction in Progress, please Wait...
             </p>
         </div>
     );

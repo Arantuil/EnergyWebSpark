@@ -78,7 +78,8 @@ const Navbar = () => {
                     border-2 border-[#8C6DFD] border-solid z-[100] p-[2px] md:p-[4px] lg:p-[6px] w-[162.94px] lg:w-[200px] xl:w-[250px] 2xl:w-[300px] rounded-bl-xl rounded-br-xl absolute text-white bg-[#1C1D30]'>
                         {searchResults.map((item) => (
                             <div className='my-[3px] sm:my-[4px] md:my-[6px] rounded-md p-[2px] sm:p-[4px] md:p-[6px] border-2 border-solid border-[#282945]'>
-                                <Link onClick={removeSearchTerm} key={item.campaignId} to={`/campaigns/${item.campaignId}`}>
+                                <Link className='flex flex-row' onClick={removeSearchTerm} key={item.campaignId} to={`/campaigns/${item.campaignId}`}>
+                                    <img className='w-[35px] h-[20px] my-auto mr-2' src={item.image} />
                                     <li key={item.campaignId}>{item.title}</li>
                                 </Link>
                             </div>

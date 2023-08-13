@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { money } from "../assets";
 import CustomButton from "../components/CustomButton";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
-import { checkIfImage } from "../utils";
 
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,7 +16,31 @@ const EditCampaign = () => {
 
     const blockchain = useSelector((state) => state.blockchain);
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+
+    const [CONFIG, SET_CONFIG] = useState({
+        CONTRACT_ADDRESS: "",
+        NETWORK: {
+            NAME: "",
+            SYMBOL: "",
+            ID: null
+        },
+        GAS_LIMIT: null
+    });
+
+    const getConfig = async () => {
+        const configResponse = await fetch('/config/config.json', {
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+        const config = await configResponse.json();
+        SET_CONFIG(config);
+    };
+
+    useEffect(() => {
+        getConfig();
+    }, []);
 
     function unixTimestampToYYYYMMDD(unixTimestamp) {
         const date = new Date(unixTimestamp);
@@ -25,6 +48,11 @@ const EditCampaign = () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    }
+
+    function YYYYMMDDToUnixTimestamp(yyyyMMDD) {
+        const [year, month, day] = yyyyMMDD.split('-').map(Number);
+        return new Date(year, month - 1, day).getTime();
     }
 
     const [currentCampaign, setCurrentCampaign] = useState([])
@@ -35,6 +63,15 @@ const EditCampaign = () => {
         });
     }, [id]);
 
+    const [form, setForm] = useState({
+        name: "",
+        title: "",
+        description: "",
+        target: "",
+        deadline: "",
+        image: "",
+    });
+    
     useEffect(() => {
         setForm({
             name: currentCampaign.username,
@@ -46,40 +83,44 @@ const EditCampaign = () => {
         });
     }, [currentCampaign])
 
-    //const { createCampaign } = useStateContext();
-    const [isloading, setIsloading] = useState(false);
-    const [form, setForm] = useState({
-        name: "",
-        title: "",
-        description: "",
-        target: "",
-        deadline: "",
-        image: "",
-    });
+    const [isLoading, setIsloading] = useState(false);
 
     const handleFormFieldChange = (fieldName, e) => {
         setForm({ ...form, [fieldName]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
+    console.log(form)
+
+    const submitEditedCampaign = (e) => {
         e.preventDefault();
-
-        checkIfImage(form.image, async (exists) => {
-            if (exists) {
-                setIsloading(true);
-                //await createCampaign({
-                //    ...form,
-                //target: ethers.utils.parseUnits(form.target, 18),
-                //});
-                setIsloading(false);
-                navigate("/");
-            } else {
-                alert("Provide valid image URL");
-                setForm({ ...form, image: "" });
-            }
-        });
-
-        console.log(form);
+        setIsloading(true);
+        blockchain.smartContract.methods
+            .editCampaign(
+                id,
+                form.title,
+                form.description,
+                form.target,
+                YYYYMMDDToUnixTimestamp(form.deadline),
+                form.image
+            )
+            .send({
+                gasPrice: 100000000,
+                to: CONFIG.CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: 0,
+            })
+            .then((receipt) => {
+                console.log(receipt)
+                setTimeout(function() {
+                    setIsloading(false);
+                }, 1000);
+            })
+            .catch((error) => {
+                console.error(error);
+                setTimeout(function() {
+                    setIsloading(false);
+                }, 1000);
+            });
     };
 
     return (
@@ -107,14 +148,13 @@ const EditCampaign = () => {
         <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20 xl:px-44 2xl:px-72 
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
         bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
-            {isloading && <Loader />}
+            {isLoading && <Loader />}
             <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#44BDD0] rounded-[10px]">
                 <h1 className="font-bold text-[18px] sm:text-[22px] leading-[38px] text-white">
                     Edit your crowdfunding campaign
                 </h1>
             </div>
             <form
-                onSubmit={handleSubmit}
                 className="w-full mt-[65px] flex flex-col gap-[30px]"
             >
                 <div className="flex flex-wrap gap-[40px]">
@@ -134,6 +174,7 @@ const EditCampaign = () => {
                         inputType="text"
                         value={form.title}
                         handleChange={(e) => handleFormFieldChange("title", e)}
+                        styles={'text-white'}
                     />
                 </div>
                 <FormField
@@ -143,6 +184,7 @@ const EditCampaign = () => {
                     isTextArea
                     value={form.description}
                     handleChange={(e) => handleFormFieldChange("description", e)}
+                    styles={'text-white'}
                 />
 
                 <div className="w-full flex justify-center items-center p-4 bg-[#8C6DFD] h-[100px] rounded-[10px]">
@@ -163,6 +205,7 @@ const EditCampaign = () => {
                         inputType="text"
                         value={form.target}
                         handleChange={(e) => handleFormFieldChange("target", e)}
+                        styles={'text-white'}
                     />
                     <FormField
                         disabled={false}
@@ -171,6 +214,7 @@ const EditCampaign = () => {
                         inputType="date"
                         value={form.deadline}
                         handleChange={(e) => handleFormFieldChange("deadline", e)}
+                        styles={'text-white'}
                     />
                 </div>
                 <FormField
@@ -180,13 +224,15 @@ const EditCampaign = () => {
                     inputType="url"
                     value={form.image}
                     handleChange={(e) => handleFormFieldChange("image", e)}
+                    styles={'text-white'}
                 />
                 <p className='text-[#808191] text-[12px]'>For best image compatibility: use a horizontal rectangle image where the main content is mostly in the middle of the image, also make sure the image url is a direct url to the image.</p>
                 <div className="flex justify-center items-center mt-[30px]">
                     <CustomButton
                         btnType="submit"
-                        title="Submit edited campaign"
-                        styles="bg-[#44BDD0] h-[50px]"
+                        title={`${isLoading ? 'Submitting edited campaign...' : 'Submit edited campaign'}`}
+                        styles={`${isLoading ? 'grayscale bg-[#44BDD0] h-[50px]' : 'bg-[#44BDD0] h-[50px]'}`}
+                        handleClick={submitEditedCampaign}
                     />
                 </div>
             </form>

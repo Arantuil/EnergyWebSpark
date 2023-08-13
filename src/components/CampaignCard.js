@@ -1,27 +1,76 @@
-import { calculateBarPercentage, daysLeft } from "../utils";
+import { calculateBarPercentage, hoursLeft, daysLeft } from "../utils";
 import { profile } from '../assets'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import SimpleSwitch from './SimpleSwitch';
+import { useState, useEffect } from 'react';
 
 const CampaignCard = ({ id, styles, title, image, owner, username, description, target, amountContributed, deadline, isProfilePage, status }) => {
     const navigate = useNavigate();
     const blockchain = useSelector((state) => state.blockchain);
 
+    const [CONFIG, SET_CONFIG] = useState({
+        CONTRACT_ADDRESS: "",
+        NETWORK: {
+            NAME: "",
+            SYMBOL: "",
+            ID: null
+        },
+        GAS_LIMIT: null
+    });
+
+    const getConfig = async () => {
+        const configResponse = await fetch('/config/config.json', {
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+        const config = await configResponse.json();
+        SET_CONFIG(config);
+    };
+
+    useEffect(() => {
+        getConfig();
+    }, []);
+
     const currentTimestamp = Date.now();
 
-    function withdrawFundsFromCampaign(idOfCampaign) {
-        console.log(idOfCampaign)
-    }
+    const [withdrawing, setWithdrawing] = useState(false)
+    const withdrawFundsFromCampaign = () => {
+        setWithdrawing(true);
+        blockchain.smartContract.methods
+            .withdrawContributions(
+                id,
+                blockchain.account
+            )
+            .send({
+                gasPrice: 100000000,
+                to: CONFIG.CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: 0,
+            })
+            .then((receipt) => {
+                console.log(receipt)
+                setWithdrawing(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                setWithdrawing(false);
+            });
+    };
 
     function editCampaign(idOfCampaign) {
         navigate('/edit-campaign/' + String(idOfCampaign))
     }
 
+    console.log('ended:', currentTimestamp>deadline)
+    console.log(deadline-currentTimestamp)
+
     return (
         isProfilePage === true ? (
             <div className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]">
-                {daysLeft(deadline) > 0 && status === true ? (
+                {deadline > currentTimestamp && status === true ? (
                     <div>
                         <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-green-400'>
                         </div>
@@ -71,7 +120,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         <div className="flex flex-col">
                             {amountContributed > 0 ? (
                                 <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
-                                    {Math.round(amountContributed/1e18 * 100) / 100} EWT
+                                    {Math.round(amountContributed/1e18 * 1000) / 1000} EWT
                                 </h4>
                             ) : (
                                 <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
@@ -82,13 +131,23 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                 Raised out of {target} EWT
                             </p>
                         </div>
-                        <div className="flex flex-col">
-                            <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
-                                {daysLeft(deadline)}
-                            </h4>
-                            <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
-                                Days Left
-                            </p>
+                        <div className="flex flex-row">
+                            <div className="flex flex-col mr-2">
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    {daysLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    Days
+                                </p>
+                            </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    {hoursLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    Hours
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -99,24 +158,30 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                             </h4>
                             <div className="my-[5px] flex flex-row w-full">
                                 {deadline > currentTimestamp ? (
-                                    <button className="hover:brightness-110 bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                    <button disabled={true} className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
                                         Withdraw
                                     </button>
                                 ) : (
-                                    <button className="hover:brightness-110 bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
-                                        Withdraw
-                                    </button>
+                                    withdrawing === true ? (
+                                        <button className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                            Withdrawing
+                                        </button>
+                                    ) : (
+                                        <button onClick={withdrawFundsFromCampaign} className="hover:brightness-110 bg-[#8C6DFD] p-[2px] sm:p-1 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                            Withdraw
+                                        </button>
+                                    )
                                 )}
                                 {deadline > currentTimestamp ? (
                                     <button
                                         onClick={() => { editCampaign(id) }}
-                                        className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
                                         Edit
                                     </button>
                                 ) : (
                                     <button
                                         onClick={() => { withdrawFundsFromCampaign(id) }}
-                                        className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[70px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
                                         Ended
                                     </button>
                                 )}
@@ -135,7 +200,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         <p className="flex-1 font-normal text-[12px] text-[#808191] truncate">
                             By <span className="text-[#b2b3bd]">{username}</span>
                         </p>
-                        <SimpleSwitch status={status} campaignId={id} />
+                        <SimpleSwitch status={status} campaignId={id} deadline={deadline} />
                     </div>
                 </div>
             </div>
@@ -144,7 +209,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                 className="hover:brightness-110 max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30] cursor-pointer"
                 onClick={() => { navigate('campaigns/' + String(id)) }}
             >
-                {daysLeft(deadline) > 0 && status === true ? (
+                {deadline > currentTimestamp && status === true ? (
                     <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-green-500'></div>
                 ) : (
                     status === false ? (
@@ -195,13 +260,23 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                 Raised out of {target} EWT
                             </p>
                         </div>
-                        <div className="flex flex-col">
-                            <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
-                                {daysLeft(deadline)}
-                            </h4>
-                            <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
-                                Days Left
-                            </p>
+                        <div className="flex flex-row">
+                            <div className="flex flex-col mr-2">
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    {daysLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    Days
+                                </p>
+                            </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                    {hoursLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    Hours
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div className="flex items-center mt-[20px] gap-2">

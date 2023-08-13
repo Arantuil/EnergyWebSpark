@@ -139,7 +139,7 @@ const Home = () => {
             <div className='flex flex-col md:flex-row md:gap-16 justify-center'>
             <div className='mx-auto w-full md:w-auto md:max-w-[600px] md:mr-0    
             mb-4 p-4 bg-[#13131a] rounded-[10px]'>
-                <p className='font-medium text-[#808191] text-center mb-[10px]'>Filters</p>
+                <p className='font-medium text-[#808191] text-center mb-[10px]'>Order by</p>
                 <div className='flex flex-row'>
                     <div className='flex flex-col mx-auto px-4'>
                         <p className='mx-[4px]'><abbr title="Sort by campaign deadline"><CiCalendarDate color="#8C6DFD" size={40} /></abbr></p>

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchData } from '../redux/data/dataActions';
 
-import { logo, dashboard, createCampaign, withdraw, profile } from "../assets";
+import { logo, dashboard, createCampaign, profile } from "../assets";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -31,11 +31,6 @@ const Sidebar = () => {
         link: "/create-campaign",
     },
     {
-        name: "withdraw",
-        imgUrl: withdraw,
-        link: "/withdraw",
-    },
-    {
         name: "profile",
         imgUrl: profile,
         link: "/profile",
@@ -57,7 +52,7 @@ const Sidebar = () => {
       </Link>
 
       <div className="3xs:mt-[8px] 2xs:mt-[11px] mt-[16px] py-4 flex-1 flex flex-col justify-between items-center bg-[#282945] rounded-xl w-full">
-        <div className="flex flex-col w-[70%] justify-center items-center gap-5">
+        <div className="flex flex-col w-[70%] justify-center items-center gap-7">
         {navlinks.map((link) => (
           link.name === 'profile' ? (
             <Link onClick={() => setNewActivePage(link.name)} to={link.link} className={`active:brightness-110 flex justify-center w-full 2xs:rounded-lg rounded-xl aspect-square
