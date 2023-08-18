@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
+import CampaignCard from "../components/CampaignCard";
 
 const EditCampaign = () => {
     const { id } = useParams();
@@ -42,18 +43,7 @@ const EditCampaign = () => {
         getConfig();
     }, []);
 
-    function unixTimestampToYYYYMMDD(unixTimestamp) {
-        const date = new Date(unixTimestamp);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function YYYYMMDDToUnixTimestamp(yyyyMMDD) {
-        const [year, month, day] = yyyyMMDD.split('-').map(Number);
-        return new Date(year, month - 1, day).getTime();
-    }
+    // ------------------------------------------------
 
     const [currentCampaign, setCurrentCampaign] = useState([])
     useEffect(() => {
@@ -71,17 +61,36 @@ const EditCampaign = () => {
         deadline: "",
         image: "",
     });
-    
+
     useEffect(() => {
         setForm({
             name: currentCampaign.username,
             title: currentCampaign.title,
             description: currentCampaign.description,
             target: currentCampaign.target,
-            deadline: unixTimestampToYYYYMMDD(currentCampaign.deadline),
+            deadline: currentCampaign.deadline,
             image: currentCampaign.image,
         });
-    }, [currentCampaign])
+    }, [currentCampaign]);
+
+    // ------------------------------------------------------------
+
+    function unixTimestampToDate(timestamp) { const date = new Date(timestamp*1000); const year = date.getUTCFullYear(); const month = String(date.getUTCMonth() + 1).padStart(2, '0'); const day = String(date.getUTCDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function unixTimestampToTime(timestamp) { 
+        const date = new Date(timestamp * 1000);
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        return hours;
+    };
+
+    const [datePart, setDatePart] = useState('');
+    const [timePart, setTimePart] = useState('');
+    useEffect(() => {
+        setDatePart(unixTimestampToDate(currentCampaign.deadline));
+        setTimePart(unixTimestampToTime(currentCampaign.deadline));
+    }, [currentCampaign]);
 
     const [isLoading, setIsloading] = useState(false);
 
@@ -89,18 +98,34 @@ const EditCampaign = () => {
         setForm({ ...form, [fieldName]: e.target.value });
     };
 
+    function dateAndTimeToUnixTimestamp(dateStr, hourStr) {
+        const combinedDateTimeStr = dateStr + 'T' + hourStr + ':00:00';
+        const unixTimestamp = new Date(combinedDateTimeStr).getTime() / 1000;
+        return unixTimestamp;
+    }
+
+    useEffect(() => {
+        if (form.name !== '' && form.title !== undefined) {
+            setForm({ ...form, ['deadline']: dateAndTimeToUnixTimestamp(datePart,timePart) });
+        }
+    }, [datePart, timePart])
+
+    const handleDateChange = (e) => { setDatePart(e.target.value) };
+    const handleTimeChange = (e) => { setTimePart(e.target.value) };
+
     console.log(form)
 
     const submitEditedCampaign = (e) => {
         e.preventDefault();
         setIsloading(true);
+        console.log(form.deadline)
         blockchain.smartContract.methods
             .editCampaign(
                 id,
                 form.title,
                 form.description,
                 form.target,
-                YYYYMMDDToUnixTimestamp(form.deadline),
+                form.deadline,
                 form.image
             )
             .send({
@@ -207,15 +232,27 @@ const EditCampaign = () => {
                         handleChange={(e) => handleFormFieldChange("target", e)}
                         styles={'text-white'}
                     />
-                    <FormField
-                        disabled={false}
-                        labelName="End Date *"
-                        placeholder="End Date"
-                        inputType="date"
-                        value={form.deadline}
-                        handleChange={(e) => handleFormFieldChange("deadline", e)}
-                        styles={'text-white'}
-                    />
+                    <div className="flex flex-wrap gap-[40px]">
+                            <FormField
+                                disabled={false}
+                                labelName="End Date *"
+                                placeholder="End Date"
+                                inputType="date"
+                                value={datePart}
+                                handleChange={(e) => handleDateChange(e)}
+                                styles={'text-white'}
+                                id='dateValue'
+                            />
+                            <FormField
+                                disabled={false}
+                                labelName="End Hour *"
+                                placeholder="0"
+                                inputType="text"
+                                value={timePart}
+                                handleChange={handleTimeChange}
+                                styles={'text-white'}
+                            />
+                    </div>
                 </div>
                 <FormField
                     disabled={false}
