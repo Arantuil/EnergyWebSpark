@@ -7,7 +7,7 @@ const port = 8082;
 const ethers = require("ethers");
 
 const contractAddress = config.contractAddress;
-const contractAbi = [{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"},{"indexed":false,"internalType":"string","name":"title","type":"string"},{"indexed":false,"internalType":"string","name":"description","type":"string"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"string","name":"image","type":"string"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"CampaignCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"},{"indexed":false,"internalType":"string","name":"title","type":"string"},{"indexed":false,"internalType":"string","name":"description","type":"string"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"string","name":"image","type":"string"}],"name":"CampaignEdited","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"CampaignStatusChanged","type":"event"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"contributeToCampaign","outputs":[],"stateMutability":"payable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"contributor","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountContributed","type":"uint256"}],"name":"ContributionMade","type":"event"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"string","name":"_username","type":"string"},{"internalType":"string","name":"_title","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"uint256","name":"_deadline","type":"uint256"},{"internalType":"string","name":"_image","type":"string"}],"name":"createCampaign","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"string","name":"_title","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"uint256","name":"_deadline","type":"uint256"},{"internalType":"string","name":"_image","type":"string"}],"name":"editCampaign","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"editCampaignStatus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"_feeAddress","type":"address"}],"name":"setFeeAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_feePoints","type":"uint256"}],"name":"setFeePoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"takeBackContribution","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"address payable","name":"_campaignOwnerAddress","type":"address"}],"name":"withdrawContributions","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"campaigns","outputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"string","name":"username","type":"string"},{"internalType":"string","name":"title","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"target","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint256","name":"amountCollected","type":"uint256"},{"internalType":"string","name":"image","type":"string"},{"internalType":"bool","name":"status","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feePoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCampaigns","outputs":[{"components":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"string","name":"username","type":"string"},{"internalType":"string","name":"title","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"target","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint256","name":"amountCollected","type":"uint256"},{"internalType":"string","name":"image","type":"string"},{"internalType":"address[]","name":"funders","type":"address[]"},{"internalType":"uint256[]","name":"contributions","type":"uint256[]"},{"internalType":"bool","name":"status","type":"bool"}],"internalType":"struct Test.Campaign[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getContributors","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"numberOfCampaigns","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
+const contractAbi = [{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"}],"name":"AllContributionsWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"},{"indexed":false,"internalType":"string","name":"title","type":"string"},{"indexed":false,"internalType":"string","name":"description","type":"string"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"bool","name":"campaignAmountWithdrawn","type":"bool"},{"indexed":false,"internalType":"string","name":"image","type":"string"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"CampaignCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"},{"indexed":false,"internalType":"string","name":"title","type":"string"},{"indexed":false,"internalType":"string","name":"description","type":"string"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"string","name":"image","type":"string"}],"name":"CampaignEdited","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"CampaignStatusChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"contributor","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountContributed","type":"uint256"}],"name":"ContributionMade","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"contributor","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountContributed","type":"uint256"}],"name":"ContributionTakenBack","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"campaigns","outputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"string","name":"username","type":"string"},{"internalType":"string","name":"title","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"target","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint256","name":"amountCollected","type":"uint256"},{"internalType":"bool","name":"campaignAmountWithdrawn","type":"bool"},{"internalType":"string","name":"image","type":"string"},{"internalType":"bool","name":"status","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"contributeToCampaign","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"string","name":"_username","type":"string"},{"internalType":"string","name":"_title","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"uint256","name":"_deadline","type":"uint256"},{"internalType":"string","name":"_image","type":"string"}],"name":"createCampaign","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"string","name":"_title","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"uint256","name":"_deadline","type":"uint256"},{"internalType":"string","name":"_image","type":"string"}],"name":"editCampaign","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"editCampaignStatus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCampaigns","outputs":[{"components":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"string","name":"username","type":"string"},{"internalType":"string","name":"title","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"target","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint256","name":"amountCollected","type":"uint256"},{"internalType":"bool","name":"campaignAmountWithdrawn","type":"bool"},{"internalType":"string","name":"image","type":"string"},{"internalType":"address[]","name":"funders","type":"address[]"},{"internalType":"uint256[]","name":"contributions","type":"uint256[]"},{"internalType":"bool","name":"status","type":"bool"}],"internalType":"struct EnergyWebSparkV1.Campaign[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getContributors","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"numberOfCampaigns","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"_feeAddress","type":"address"}],"name":"setFeeAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_feePoints","type":"uint256"}],"name":"setFeePoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"takeBackContribution","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"withdrawContributions","outputs":[],"stateMutability":"nonpayable","type":"function"}]
 const provider = new ethers.providers.JsonRpcProvider(config.rpc);
 const contract = new ethers.Contract(contractAddress, contractAbi, provider);
 
@@ -18,7 +18,7 @@ admin.initializeApp({
 const db = admin.database();
 
 contract.on("CampaignCreated", (
-    _campaignId, _owner, _username, _title, _description, _target, _deadline, _image, _status) => {
+    _campaignId, _owner, _username, _title, _description, _target, _deadline, _campaignAmountWithdrawn, _image, _status) => {
     try {
         console.log(`Campaign created with ID: ${_campaignId.toString()}`);
 
@@ -31,6 +31,7 @@ contract.on("CampaignCreated", (
             description: _description.toString(),
             target: Number(_target),
             deadline: parseInt(_deadline),
+            campaignAmountWithdrawn: false,
             image: _image.toString(),
             status: _status
         });
@@ -60,6 +61,20 @@ contract.on("CampaignEdited", (
     }
 });
 
+contract.on("CampaignStatusChanged", (
+    _campaignId, _owner, _status) => {
+    try {
+        console.log(`Campaign status changed with ID: ${_campaignId.toString()}`);
+
+        const ref = db.ref(`/${parseInt(_campaignId.toString())}`);
+        ref.update({
+            status: _status
+        });
+    } catch (error) {
+        console.error("Error in CampaignStatusChanged event:", error);
+    }
+});
+
 contract.on("ContributionMade", async (
     _campaignId, _contributor, _amountContributed) => {
     try {
@@ -81,15 +96,52 @@ contract.on("ContributionMade", async (
     }
 });
 
-contract.on("CampaignStatusChanged", (
-    _campaignId, _owner, _status) => {
+contract.on("AllContributionsWithdrawn", (
+    _campaignId) => {
     try {
         console.log(`Campaign status changed with ID: ${_campaignId.toString()}`);
 
         const ref = db.ref(`/${parseInt(_campaignId.toString())}`);
         ref.update({
-            status: _status
+            campaignAmountWithdrawn: true
         });
+    } catch (error) {
+        console.error("Error in CampaignStatusChanged event:", error);
+    }
+});
+
+contract.on("ContributionTakenBack", async (
+    _campaignId, _contributor, _amountContributed) => {
+    try {
+        console.log(`Campaign status changed with ID: ${_campaignId.toString()}`);
+
+        const rootref = db.ref(`/${parseInt(_campaignId.toString())}/contributions`);
+        let contributions = (await rootref.get()).val()
+
+        if (contributions) {
+            for (const contributionKey in contributions) {
+                const contributor = contributions[contributionKey].contributor;
+
+                if (contributor.toLowerCase() === _contributor.toLowerCase()) {
+                    const contrRef = db.ref(`/${parseInt(_campaignId.toString())}/contributions/${contributionKey}`);
+                    contrRef.remove()
+                        .then(() => {
+                            console.log(`Removed contribution with key: ${contributionKey}`);
+                        })
+                        .catch((error) => {
+                            console.error(`Error removing contribution: ${error}`);
+                        });
+                }
+            }
+
+            const newRef = db.ref(`/${parseInt(_campaignId.toString())}/amountContributed`);
+            const newRef2 = db.ref(`/${parseInt(_campaignId.toString())}`);
+            let currentDonatedAmount = (await newRef.get()).val()
+            newRef2.update({
+                amountContributed: currentDonatedAmount - Number(_amountContributed)
+            });
+        }
+        
     } catch (error) {
         console.error("Error in CampaignStatusChanged event:", error);
     }
