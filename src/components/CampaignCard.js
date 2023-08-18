@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import SimpleSwitch from './SimpleSwitch';
 import { useState, useEffect } from 'react';
 
-const CampaignCard = ({ id, styles, title, image, owner, username, description, target, amountContributed, deadline, isProfilePage, status }) => {
+const CampaignCard = ({ id, styles, title, image, owner, username, description, target, amountContributed, deadline, isProfilePage, status, campaignAmountWithdrawn  }) => {
     const navigate = useNavigate();
     const blockchain = useSelector((state) => state.blockchain);
 
@@ -34,15 +34,14 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
         getConfig();
     }, []);
 
-    const currentTimestamp = Date.now();
+    const currentTimestamp = Number((Date.now()/1000).toFixed(0));
 
     const [withdrawing, setWithdrawing] = useState(false)
     const withdrawFundsFromCampaign = () => {
         setWithdrawing(true);
         blockchain.smartContract.methods
             .withdrawContributions(
-                id,
-                blockchain.account
+                id
             )
             .send({
                 gasPrice: 100000000,
@@ -64,26 +63,25 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
         navigate('/edit-campaign/' + String(idOfCampaign))
     }
 
-    console.log('ended:', currentTimestamp>deadline)
-    console.log(deadline-currentTimestamp)
+    console.log(currentTimestamp>deadline)
 
     return (
         isProfilePage === true ? (
             <div className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]">
                 {deadline > currentTimestamp && status === true ? (
                     <div>
-                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-green-400'>
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-green-400'>
                         </div>
                     </div>
                 ) : (
                     status === false ? (
                         <div>
-                            <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-yellow-400'>
+                            <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-yellow-400'>
                             </div>
                         </div>
                     ) : (
                     <div>
-                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-red-400'>
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-red-400'>
                         </div>
                     </div>
                     )
@@ -106,46 +104,64 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         className='absolute h-full rounded bg-[#1DC071]'></div>
                 </div>
 
-                <div className="flex flex-col p-4">
+                <div className="flex flex-col p-4 4xs:p-3">
                     <div className="block">
-                        <h3 className="font-semibold text-[16px] text-white text-left leading-[26px] truncate">
+                        <h3 className="font-semibold text-[16px] 4xs:text-[15px] text-white text-left leading-[26px] truncate">
                             {title}
                         </h3>
-                        <p className="mt-[5px] font-normal text-[#808191] text-left leading-[20px] truncate">
+                        <p className="text-[16px] 4xs:text-[15px] mt-[5px] font-normal text-[#808191] text-left leading-[20px] truncate">
                             {description}
                         </p>
                     </div>
 
-                    <div className="flex justify-between flex-wrap mt-[15px] gap-2">
+                    <div className="flex justify-between mt-[15px] gap-2">
                         <div className="flex flex-col">
                             {amountContributed > 0 ? (
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {Math.round(amountContributed/1e18 * 1000) / 1000} EWT
                                 </h4>
                             ) : (
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     0 EWT
                                 </h4>
                             )}
-                            <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                            <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                 Raised out of {target} EWT
                             </p>
                         </div>
-                        <div className="flex flex-row">
+                        <div className="4xs:hidden flex flex-row">
                             <div className="flex flex-col mr-2">
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {daysLeft(deadline)}
                                 </h4>
-                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                     Days
                                 </p>
                             </div>
                             <div className="flex flex-col ml-2">
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {hoursLeft(deadline)}
                                 </h4>
-                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                     Hours
+                                </p>
+                            </div>
+                        </div>
+                        <div className="hidden 4xs:flex flex-row">
+                            <div className="flex flex-col mr-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {daysLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    D
+                                </p>
+                            </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {hoursLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    H
                                 </p>
                             </div>
                         </div>
@@ -157,17 +173,23 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                 Options
                             </h4>
                             <div className="my-[5px] flex flex-row w-full">
-                                {deadline > currentTimestamp ? (
-                                    <button disabled={true} className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
-                                        Withdraw
-                                    </button>
+                                {currentTimestamp > deadline ? (
+                                    campaignAmountWithdrawn === true ? (
+                                        <button disabled={true} className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
+                                            Withdrawn
+                                        </button>
+                                    ) : (
+                                        <button onClick={withdrawFundsFromCampaign} className="hover:brightness-110 bg-[#8C6DFD] p-[2px] sm:p-1 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
+                                            Withdraw
+                                        </button>
+                                    )
                                 ) : (
                                     withdrawing === true ? (
-                                        <button className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        <button className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
                                             Withdrawing
                                         </button>
                                     ) : (
-                                        <button onClick={withdrawFundsFromCampaign} className="hover:brightness-110 bg-[#8C6DFD] p-[2px] sm:p-1 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        <button disabled={true} className="cursor-default grayscale bg-[#8C6DFD] p-1 sm:p-2 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
                                             Withdraw
                                         </button>
                                     )
@@ -175,13 +197,13 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                 {deadline > currentTimestamp ? (
                                     <button
                                         onClick={() => { editCampaign(id) }}
-                                        className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        className="hover:brightness-110 bg-[#44BDD0] p-1 sm:p-2 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
                                         Edit
                                     </button>
                                 ) : (
                                     <button
-                                        onClick={() => { withdrawFundsFromCampaign(id) }}
-                                        className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[85px] mt-[3px] font-normal text-[12px] leading-[20px] text-white">
+                                        disabled
+                                        className="bg-[#44BDD0] cursor-default grayscale p-1 sm:p-2 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
                                         Ended
                                     </button>
                                 )}
@@ -210,12 +232,12 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                 onClick={() => { navigate('campaigns/' + String(id)) }}
             >
                 {deadline > currentTimestamp && status === true ? (
-                    <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-green-500'></div>
+                    <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-green-500'></div>
                 ) : (
                     status === false ? (
-                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-yellow-400'></div>
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-yellow-400'></div>
                     ) : (
-                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 bg-red-500'></div>
+                        <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-red-500'></div>
                     )
                 )}
                 <img
@@ -235,46 +257,64 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         className='absolute h-full rounded bg-[#1DC071]'></div>
                 </div>
 
-                <div className="flex flex-col p-4">
+                <div className="flex flex-col p-4 4xs:p-3 5xs:p-2 6xs:p-1">
                     <div className="block">
-                        <h3 className="font-semibold text-[16px] text-white text-left leading-[26px] truncate">
+                        <h3 className="font-semibold text-[16px] 4xs:text-[15px] text-white text-left leading-[26px] truncate">
                             {title}
                         </h3>
-                        <p className="mt-[5px] font-normal text-[#808191] text-left leading-[20px] truncate">
+                        <p className="text-[16px] 4xs:text-[15px] mt-[5px] font-normal text-[#808191] text-left leading-[20px] truncate">
                             {description}
                         </p>
                     </div>
 
-                    <div className="flex justify-between flex-wrap mt-[15px] gap-2">
+                    <div className="flex justify-between mt-[15px] gap-2">
                         <div className="flex flex-col">
                             {amountContributed > 0 ? (
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {Math.round(amountContributed/1e18 * 100) / 100} EWT
                                 </h4>
                             ) : (
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     0 EWT
                                 </h4>
                             )}
-                            <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                            <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                 Raised out of {target} EWT
                             </p>
                         </div>
-                        <div className="flex flex-row">
+                        <div className="4xs:hidden flex flex-row">
                             <div className="flex flex-col mr-2">
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {daysLeft(deadline)}
                                 </h4>
-                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                     Days
                                 </p>
                             </div>
                             <div className="flex flex-col ml-2">
-                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {hoursLeft(deadline)}
                                 </h4>
-                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                     Hours
+                                </p>
+                            </div>
+                        </div>
+                        <div className="hidden 4xs:flex flex-row">
+                            <div className="flex flex-col mr-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {daysLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    D
+                                </p>
+                            </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {hoursLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    H
                                 </p>
                             </div>
                         </div>
