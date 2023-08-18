@@ -58,6 +58,7 @@ const Profile = () => {
                                 deadline={cardInfo.deadline}
                                 isProfilePage={true}
                                 status={cardInfo.status}
+                                campaignAmountWithdrawn={cardInfo.campaignAmountWithdrawn}
                             />
                         ))}
                     </div>
@@ -88,6 +89,13 @@ const Profile = () => {
                             />
                         </div>
                     </div>
+                    {blockchain.errorMsg !== "" ? (
+                        <div className="mt-6 sm:mt-8">
+                            <p className="text-center font-semibold text-[16px] sm:text-[18px] leading-[38px] text-white">
+                                {blockchain.errorMsg}
+                            </p>
+                        </div>
+                    ) : null}
                 </div>
             )}
         </div>

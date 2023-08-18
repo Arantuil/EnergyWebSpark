@@ -52,7 +52,7 @@ const Sidebar = () => {
       </Link>
 
       <div className="3xs:mt-[8px] 2xs:mt-[11px] mt-[16px] py-4 flex-1 flex flex-col justify-between items-center bg-[#282945] rounded-xl w-full">
-        <div className="flex flex-col w-[70%] justify-center items-center gap-7">
+        <div className="flex flex-col w-[70%] justify-center items-center gap-6">
         {navlinks.map((link) => (
           link.name === 'profile' ? (
             <Link onClick={() => setNewActivePage(link.name)} to={link.link} className={`active:brightness-110 flex justify-center w-full 2xs:rounded-lg rounded-xl aspect-square

@@ -1,5 +1,5 @@
 export const daysLeft = (deadline) => {
-    const difference = new Date(deadline).getTime() - Date.now();
+    const difference = new Date(deadline * 1000).getTime() - Date.now();
     let remainingDays = difference / (1000 * 3600 * 24);
 
     if (remainingDays < 0) {
@@ -10,10 +10,11 @@ export const daysLeft = (deadline) => {
 };
 
 export const hoursLeft = (deadline) => {
-    const difference = new Date(deadline).getTime() - Date.now();
+    const difference = new Date(deadline * 1000).getTime() - Date.now();
     const remainingHoursTotal = difference / (1000 * 3600);
 
     let remainingHours = remainingHoursTotal % 24;
+    remainingHours = remainingHours - 1
 
     if (remainingHours < 0) {
         remainingHours = 0;
@@ -23,7 +24,7 @@ export const hoursLeft = (deadline) => {
 };
 
 export const minutesLeft = (deadline) => {
-    const difference = new Date(deadline).getTime() - Date.now();
+    const difference = new Date(deadline * 1000).getTime() - Date.now();
     const remainingMinutesTotal = difference / (1000 * 60);
 
     let remainingMinutes = remainingMinutesTotal % 24*60;
