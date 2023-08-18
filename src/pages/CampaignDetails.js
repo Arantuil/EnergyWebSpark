@@ -43,7 +43,7 @@ const CampaignDetails = () => {
 
     const { id } = useParams();
 
-    const currentTimestamp = Date.now();
+    const currentTimestamp = Number((Date.now()/1000).toFixed(0));
 
     const [sortedCampaigns, setSortedCampaigns] = useState([])
     useEffect(() => {
@@ -56,8 +56,6 @@ const CampaignDetails = () => {
             }
         });
     }, [id]);
-
-    console.log(sortedCampaigns)
 
     const [contributorEntries, setContributorEntries] = useState([]);
     useEffect(() => {
@@ -152,8 +150,24 @@ const CampaignDetails = () => {
     };
 
     const [showingAllEntries, setShowingAllEntries] = useState(false);
-
     const [contributionInProcess, setContributionInProcess] = useState(false);
+
+    const [userContributionTotal, setUserContributionTotal] = useState(0);
+    function getUserContributionTotal() {
+        if (userContributionTotal === 0) {
+            for (let i = 0; i < contributorEntries.length; i++) {
+                try {
+                    if ((contributorEntries[i][0]).toLowerCase() === (blockchain.account).toLowerCase()) {
+                        setUserContributionTotal(userContributionTotal+contributorEntries[i][1])
+                    }
+                } catch {continue}
+            }
+        }
+    }
+    useEffect(() => {
+        getUserContributionTotal();
+    }, [contributorEntries, blockchain.account]);
+
     const handleDonate = () => {
         setContributionInProcess(true);
         blockchain.smartContract.methods
@@ -167,6 +181,8 @@ const CampaignDetails = () => {
                 value: amount * 1e18,
             })
             .then((receipt) => {
+                setUserContributionTotal(0);
+                getUserContributionTotal();
                 console.log(receipt)
                 setContributionInProcess(false);
                 setTimeout(fire, 1000);
@@ -176,6 +192,31 @@ const CampaignDetails = () => {
                 setContributionInProcess(false);
             });
     };
+
+    const [takingBackContributionInProcess, setTakingBackContributionInProcess] = useState(false);
+    function userTakeBackContributions() {
+        setTakingBackContributionInProcess(true);
+        blockchain.smartContract.methods
+            .takeBackContribution(
+                id
+            )
+            .send({
+                gasPrice: 100000000,
+                to: CONFIG.CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: 0,
+            })
+            .then((receipt) => {
+                setUserContributionTotal(0);
+                getUserContributionTotal();
+                console.log(receipt)
+                setTakingBackContributionInProcess(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                setTakingBackContributionInProcess(false);
+            });
+    }
 
     return (
         <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20
@@ -247,6 +288,31 @@ const CampaignDetails = () => {
                                 </div>
                             </div>
 
+                            {blockchain.account !== null && blockchain.account !== '' ? (
+                            <div>
+                                <h4 className="font-semibold text-[18px] text-white uppercase">
+                                    Your total contribution
+                                </h4>
+
+
+                                <div className="mt-[20px]">
+                                    <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
+                                        {userContributionTotal === 0 ? 0: Math.round(userContributionTotal / 1e18 * 1000) / 1000} EWT ({Math.round(((userContributionTotal/1e18/sortedCampaigns.target)*100)* 1000) / 1000}% of the target)
+                                    </p>
+                                </div>
+
+                                <CustomButton
+                                        btnType="button"
+                                        title='Take back contribution'
+                                        disabled={`${takingBackContributionInProcess || currentTimestamp > sortedCampaigns.deadline ? true : false}`}
+                                        styles={`${takingBackContributionInProcess || currentTimestamp > sortedCampaigns.deadline ? "grayscale cursor-default" : "hover:brightness-110"} bg-[#44BDD0] mt-[8px] w-auto h-[40px]`}
+                                        handleClick={userTakeBackContributions}
+                                    />
+                            </div>
+                            ) : (
+                                <></>
+                            )}
+
                             <div>
                                 {showingAllEntries === false && contributorEntries.length > 0 ? (
                                     <h4 className="font-semibold text-[18px] text-white">
@@ -263,8 +329,14 @@ const CampaignDetails = () => {
                                             contributorEntries.slice(0, 3).map((funder) => (
                                                 <div className="flex justify-between items-center gap-4">
                                                     <MetamaskAccountIcon size={22} address={funder[0]} />
-                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="block md:hidden hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
                                                         {truncateAddress(funder[0], 5)}
+                                                    </a>
+                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hidden md:block xl:hidden hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                        {truncateAddress(funder[0], 10)}
+                                                    </a>
+                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hidden xl:block hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                        {funder[0]}
                                                     </a>
                                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] break-all">
                                                         {funder[1] / 1e18} EWT
@@ -275,8 +347,14 @@ const CampaignDetails = () => {
                                             contributorEntries.map((funder) => (
                                                 <div className="flex justify-between items-center gap-4">
                                                     <MetamaskAccountIcon size={22} address={funder[0]} />
-                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="block md:hidden hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
                                                         {truncateAddress(funder[0], 5)}
+                                                    </a>
+                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hidden md:block xl:hidden hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                        {truncateAddress(funder[0], 10)}
+                                                    </a>
+                                                    <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="hidden xl:block hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
+                                                        {funder[0]}
                                                     </a>
                                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] break-all">
                                                         {funder[1] / 1e18} EWT
@@ -377,8 +455,8 @@ const CampaignDetails = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
-                                        <div className="flex flex-row">
+                                    <div className="mt-[20px] p-4 bg-[#13131a] rounded-[10px]">
+                                        <div className="flex flex-row justify-around">
                                             <div className="flex flex-col mr-2">
                                                 <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
                                                     {daysLeft(sortedCampaigns.deadline)}

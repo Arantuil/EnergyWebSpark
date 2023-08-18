@@ -16,22 +16,23 @@ const Navbar = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
 
-    const [sortedCampaigns, setSortedCampaigns] = useState([])
+    const [allCampaigns, setAllCampaigns] = useState([])
     useEffect(() => {
         onValue(ref(db), snapshot => {
             const data = snapshot.val();
-            setSortedCampaigns(data)
+            if (data !== undefined && data !== null) {
+                setAllCampaigns(Object.values(data))
+            }
         });
     }, []);
 
     const doSearch = (term) => {
-        const results = sortedCampaigns.filter((item) =>
+        const results = allCampaigns.filter((item) =>
             item.title.toLowerCase().includes(term.toLowerCase()) || item.username.toLowerCase().includes(term.toLowerCase())
         );
         setSearchResults(results);
     };
 
-    // Debounce the search to prevent excessive calls while typing
     const debouncedSearch = debounce(doSearch, 200);
 
     const handleInputChange = (event) => {
@@ -57,7 +58,7 @@ const Navbar = () => {
 
     useEffect(() => {
         getData();
-    }, [])
+    }, [blockchain])
 
     //console.log(blockchain)
     console.log(bcdata)
