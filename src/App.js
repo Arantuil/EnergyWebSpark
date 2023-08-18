@@ -21,7 +21,7 @@ import Navbar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
 
 function App() {
-  const [isOffline, setIsOffline] = useState(false);
+  const [isOffline, setIsOffline] = useState(true);
 
   const [currentTimestamp, setCurrentTimestamp] = useState(Math.floor(Date.now() / 1000));
   const openTimestamp = 1692324200
