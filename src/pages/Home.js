@@ -10,6 +10,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { GoListOrdered } from 'react-icons/go';
 import { TbLetterA } from 'react-icons/tb';
 import { TbLetterZ } from 'react-icons/tb';
+import CustomButton from '../components/CustomButton';
 
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
@@ -18,13 +19,29 @@ const Home = () => {
     /* global BigInt */
     const [sortedCampaigns, setSortedCampaigns] = useState([])
     const [allCampaigns, setAllCampaigns] = useState([])
+    
+    function orderCampaignsByStatus(campaignsArray) {
+        campaignsArray.sort((a, b) => {
+            if (a.status === true && b.status !== true) {
+                return -1;
+            } else if (a.status !== true && b.status === true) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        return campaignsArray;
+    }
+
     useEffect(() => {
         onValue(ref(db), snapshot => {
             const data = snapshot.val();
             if (data) {
                 const campaignsArray = Object.values(data);
-                setSortedCampaigns(campaignsArray);
-                setAllCampaigns(campaignsArray);
+                setAllCampaigns(orderCampaignsByStatus(campaignsArray));
+
+                const filtered = campaignsArray.filter(campaign => campaign.status === true && campaign.deadline > Number((Date.now()/1000).toFixed(0)) );
+                setSortedCampaigns(filtered);
             }
         });
     }, []);
@@ -113,7 +130,7 @@ const Home = () => {
     };
 
     function filterCampaignsStatusActive() {
-        const filtered = allCampaigns.filter(campaign => campaign.status === true);
+        const filtered = allCampaigns.filter(campaign => campaign.status === true && campaign.deadline > Number((Date.now()/1000).toFixed(0)) );
         setSortedCampaigns(filtered);
     };
 
@@ -123,38 +140,63 @@ const Home = () => {
     };
 
     function filterCampaignsStatusEnded() {
-        const filtered = allCampaigns.filter(campaign => campaign.deadline < Date.now() );
+        const filtered = allCampaigns.filter(campaign => campaign.deadline < Number((Date.now()/1000).toFixed(0)) );
         setSortedCampaigns(filtered);
     };
 
+    function orderObjectsByDeadline(objectsArray) {
+        const currentTimestamp = Number((Date.now()/1000).toFixed(0));
+
+        return objectsArray.sort((a, b) => {
+            const deadlineA = a.deadline;
+            const deadlineB = b.deadline;
+
+            if (deadlineA > currentTimestamp && deadlineB <= currentTimestamp) {
+                return -1;
+            } else if (deadlineA <= currentTimestamp && deadlineB > currentTimestamp) {
+                return 1;
+            } else {
+                return deadlineA - deadlineB;
+            }
+        });
+    }
+
     function filterCampaignsStatusAll() {
         const filtered = allCampaigns
-        setSortedCampaigns(filtered);
+        setSortedCampaigns(orderObjectsByDeadline(filtered));
     };
 
     return (
         <div className='p-2 sm:p-4 md:p-6 lg:p-8 
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
         bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)]'>
+                    {blockchain.errorMsg !== "" ? (
+                        <div className="mb-6 sm:mb-8">
+                            <p className="text-center font-semibold text-[16px] sm:text-[18px] leading-[38px] text-white">
+                                {blockchain.errorMsg}
+                            </p>
+                        </div>
+                    ) : null}
             <div className='flex flex-col md:flex-row md:gap-16 justify-center'>
+                
             <div className='mx-auto w-full md:w-auto md:max-w-[600px] md:mr-0    
             mb-4 p-4 bg-[#13131a] rounded-[10px]'>
                 <p className='font-medium text-[#808191] text-center mb-[10px]'>Order by</p>
                 <div className='flex flex-row'>
                     <div className='flex flex-col mx-auto px-4'>
-                        <p className='mx-[4px]'><abbr title="Sort by campaign deadline"><CiCalendarDate color="#8C6DFD" size={40} /></abbr></p>
-                        <button onClick={sortReset} className='ml-[8px] hover:brightness-110 border-[2px] border-solid border-[#808191] rounded-lg absolute translate-x-[34px]'><RxCross2 color='#8C6DFD' /></button>
+                        <p className='mx-[5px]'><abbr title="Sort by campaign deadline"><CiCalendarDate color="#8C6DFD" size={38} /></abbr></p>
+                        <button onClick={sortReset} className='ml-[8px] hover:brightness-110 border-[2px] border-solid border-[#282945] rounded-lg absolute translate-x-[34px]'><RxCross2 color='#8C6DFD' /></button>
                         <div className='flex flex-row w-full'>
-                            <button onClick={sortDeadlineUp} className='hover:brightness-110 border-[2px] border-solid border-[#808191] rounded-lg mx-[1px] flex justify-center w-1/2'><BiUpArrowAlt color="#8C6DFD" size={20} /></button>
-                            <button onClick={sortDeadlineDown} className='hover:brightness-110 border-[2px] border-solid border-[#808191] rounded-lg mx-[1px] flex justify-center w-1/2'><BiDownArrowAlt color="#8C6DFD" size={20} /></button>
+                            <button onClick={sortDeadlineUp} className='hover:brightness-110 border-[2px] border-solid border-[#282945] rounded-lg mx-[1px] flex justify-center w-1/2'><BiUpArrowAlt color="#8C6DFD" size={20} /></button>
+                            <button onClick={sortDeadlineDown} className='hover:brightness-110 border-[2px] border-solid border-[#282945] rounded-lg mx-[1px] flex justify-center w-1/2'><BiDownArrowAlt color="#8C6DFD" size={20} /></button>
                         </div>
                     </div>
                     <div className='flex flex-col mx-auto px-4'>
-                        <p className='mx-[4px]'><abbr title="Sort alfabetically by title"><GoListOrdered color="#8C6DFD" size={40} /></abbr></p>
-                        <button onClick={sortReset} className='ml-[8px] hover:brightness-110 border-[2px] border-solid border-[#808191] rounded-lg absolute translate-x-[34px]'><RxCross2 color='#8C6DFD' /></button>
+                        <p className='mx-[5px]'><abbr title="Sort alfabetically by title"><GoListOrdered color="#8C6DFD" size={38} /></abbr></p>
+                        <button onClick={sortReset} className='ml-[8px] hover:brightness-110 border-[2px] border-solid border-[#282945] rounded-lg absolute translate-x-[34px]'><RxCross2 color='#8C6DFD' /></button>
                         <div className='flex flex-row w-full'>
-                            <button onClick={sortTitleAtoZ} className='hover:brightness-110 border-[2px] border-solid border-[#808191] rounded-lg mx-[1px] flex justify-center w-1/2'><TbLetterA color="#8C6DFD" size={20} /></button>
-                            <button onClick={sortTitleZtoA} className='hover:brightness-110 border-[2px] border-solid border-[#808191] rounded-lg mx-[1px] flex justify-center w-1/2'><TbLetterZ color="#8C6DFD" size={20} /></button>
+                            <button onClick={sortTitleAtoZ} className='hover:brightness-110 border-[2px] border-solid border-[#282945] rounded-lg mx-[1px] flex justify-center w-1/2'><TbLetterA color="#8C6DFD" size={20} /></button>
+                            <button onClick={sortTitleZtoA} className='hover:brightness-110 border-[2px] border-solid border-[#282945] rounded-lg mx-[1px] flex justify-center w-1/2'><TbLetterZ color="#8C6DFD" size={20} /></button>
                         </div>
                     </div>
                 </div>
@@ -196,11 +238,20 @@ const Home = () => {
                         amountContributed={cardInfo.amountContributed}
                         deadline={cardInfo.deadline}
                         status={cardInfo.status}
+                        campaignAmountWithdrawn={cardInfo.campaignAmountWithdrawn}
                     />
                 ))
             ) : (
                 <p className='font-medium text-[#808191] text-[20px]'>No campaigns found with this status</p>
             )}
+            </div>
+            <div className='flex justify-center mt-[20px]'>
+                <CustomButton
+                    btnType="submit"
+                    title={`Show all campaigns`}
+                    styles={`bg-[#8C6DFD] h-[50px] hover:brightness-110`}
+                    handleClick={filterCampaignsStatusAll}
+                />
             </div>
         </div>
     );
