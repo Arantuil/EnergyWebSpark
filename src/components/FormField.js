@@ -6,7 +6,8 @@ const FormField = ({
     value,
     handleChange,
     disabled,
-    styles
+    styles,
+    id
 }) => {
     return (
         <label className="flex-1 w-full flex flex-col">
@@ -27,6 +28,7 @@ const FormField = ({
                 />
             ) : (
                 <input
+                    id={id}
                     disabled={disabled}
                     required
                     value={value}

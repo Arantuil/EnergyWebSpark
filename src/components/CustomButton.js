@@ -1,6 +1,6 @@
 const CustomButton = ({ disabled, btnType, title, handleClick, styles }) => {
     return (
-        disabled === true ? (
+        disabled === true || disabled === 'true' ? (
             <button
                 disabled={disabled}
                 type={btnType}
