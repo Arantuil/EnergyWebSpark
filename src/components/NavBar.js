@@ -58,11 +58,7 @@ const Navbar = () => {
 
     useEffect(() => {
         getData();
-    }, [blockchain])
-
-    //console.log(blockchain)
-    console.log(bcdata)
-
+    }, [])
 
     return (
         <div className="3xs:ml-[60px] 2xs:ml-[70px] xs:ml-[80px] ml-[96px] sm:ml-[100px] 3xs:w-[calc(100%-60px-16px)] 2xs:w-[calc(100%-70px-16px)] xs:w-[calc(100%-80px-16px)] w-[calc(100%-96px-24px)] sm:w-[calc(100%-96px-48px)] md:w-[calc(100%-96px-64px)] absolute 3xs:h-[40px] 2xs:h-[45px] xs:h-[50px] h-[60px] gap-1 flex flex-row">

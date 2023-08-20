@@ -113,12 +113,10 @@ const EditCampaign = () => {
     const handleDateChange = (e) => { setDatePart(e.target.value) };
     const handleTimeChange = (e) => { setTimePart(e.target.value) };
 
-    console.log(form)
-
     const submitEditedCampaign = (e) => {
+        console.log(form)
         e.preventDefault();
         setIsloading(true);
-        console.log(form.deadline)
         blockchain.smartContract.methods
             .editCampaign(
                 id,

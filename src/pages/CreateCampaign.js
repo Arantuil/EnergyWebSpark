@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { money } from "../assets";
 import CustomButton from "../components/CustomButton";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
-import { checkIfImage } from "../utils";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import ReactCanvasConfetti from 'react-canvas-confetti';
 
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useSelector, useDispatch } from 'react-redux';
@@ -60,8 +60,50 @@ const CreateCampaign = () => {
         return unixTimestampInSeconds;
     }
 
-    console.log(form.deadline)
-    console.log(convertToUnixTimestamp(form.deadline))
+    const canvasStyles = {
+        position: 'absolute',
+        pointerEvents: 'none',
+        width: '100%',
+        height: '100%',
+        top: '0%',
+        left: '0%'
+    }
+
+    const refAnimationInstance = useRef(null);
+
+    const getInstance = useCallback((instance) => {
+        refAnimationInstance.current = instance;
+    }, []);
+
+    const makeShot = useCallback((particleRatio, opts) => {
+        refAnimationInstance.current &&
+            refAnimationInstance.current({
+                ...opts,
+                origin: { y: 0.7 },
+                particleCount: Math.floor(200 * particleRatio)
+            });
+    }, []);
+
+    const fire = useCallback(() => {
+        makeShot(0.1, {
+            spread: 35,
+            startVelocity: 25,
+            decay: 0.94,
+            scalar: 1.0
+        });
+        makeShot(0.13, {
+            spread: 45,
+            startVelocity: 45,
+            decay: 0.93,
+            scalar: 1.0
+        });
+        makeShot(0.15, {
+            spread: 55,
+            startVelocity: 35,
+            decay: 0.95,
+            scalar: 1.0
+        });
+    }, [makeShot]);
 
     const [creatingCampaign, setCreatingCampaign] = useState(false);
     const createCampaign = (e) => {
@@ -86,12 +128,11 @@ const CreateCampaign = () => {
             })
             .then((receipt) => {
                 console.log(receipt)
-
+                fire()
                 setTimeout(function () {
-                    //fire()
+                    navigate("/")
                 }, 5000);
                 setCreatingCampaign(false);
-                //dispatch(fetchData(blockchain.account));
             })
             .catch((error) => {
                 console.error(error);
@@ -117,6 +158,7 @@ const CreateCampaign = () => {
         bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
             {blockchain.account !== "" && blockchain.account !== null ? (
                 <div>
+                    <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
                     {isloading && <Loader />}
                     <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#1dc071] rounded-[10px]">
                         <h1 className="font-bold text-[18px] sm:text-[22px] leading-[38px] text-white">
