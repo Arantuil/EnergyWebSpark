@@ -61,19 +61,27 @@ const Offline = ({ difference }) => {
                     </svg>
                 </div>
 
-                <div className='mt-[20px]'>
-                    <p>
-                        The website is temporarily offline, you can always interact with the dapp directly on the block explorer: <a
-                            className='break-words max-w-[80%] text-[#8D6DFD] hover:brightness-125 md:max-w-[750px]'
-                            target="_blank"
-                            rel="noreferrer"
-                            href={`https://explorer.energyweb.org/token/${CONFIG.CONTRACT_ADDRESS}/token-transfers`}>EnergyWebSpark contract</a>
-                    </p>
-                </div>
+                {difference > 0 ? (
+                    <div className='mt-[20px] max-w-[90%] md:max-w-[900px]'>
+                        <p>
+                            The website is temporarily offline
+                        </p>
+                    </div>
+                ) : (
+                    <div className='mt-[20px] max-w-[90%] md:max-w-[900px]'>
+                        <p>
+                            The website is temporarily offline, you can always interact with the dapp directly on the block explorer: <a
+                                className='break-words text-[#8D6DFD] hover:brightness-125'
+                                target="_blank"
+                                rel="noreferrer"
+                                href={`https://explorer.energyweb.org/token/${CONFIG.CONTRACT_ADDRESS}/token-transfers`}>EnergyWebSpark contract</a>
+                        </p>
+                    </div>
+                )}
 
                 <div className={`${difference > 0 ? 'flex' : 'hidden'} mt-[20px]`}>
                     <p>
-                    The website opens in: {difference} seconds.
+                        EnergyWebSpark will launch in: {Math.round((difference/60/60)%60)} hours, {Math.round((difference/60)%60)} minutes, {difference%60} seconds.
                     </p>
                 </div>
             </header>
