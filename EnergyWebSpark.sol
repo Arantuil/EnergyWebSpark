@@ -161,7 +161,7 @@ contract EnergyWebSparkV1 is Ownable {
         campaign.funders.push(msg.sender);
         campaign.contributions.push(amount);
 
-        require(msg.value > 0);
+        require(amount > 0);
 
         campaign.amountCollected = campaign.amountCollected + amount;
 

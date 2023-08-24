@@ -1,9 +1,9 @@
 {
-  "CONTRACT_ADDRESS": "0xe5F6EB01FE54857ff956E5D545E09021df0d091c",
+  "CONTRACT_ADDRESS": "0xc9f5a92D9f844aD2136a61aDfbefB24D1E808E66",
   "NETWORK": {
-    "NAME": "VOLTA",
-    "SYMBOL": "VLT",
-    "ID": 73799
+    "NAME": "EnergyWeb",
+    "SYMBOL": "EWT",
+    "ID": 246
   },
   "GAS_LIMIT": 300000
 }
