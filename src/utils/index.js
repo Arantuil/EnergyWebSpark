@@ -1,3 +1,5 @@
+import Web3 from 'web3';
+
 export const daysLeft = (deadline) => {
     const difference = new Date(deadline * 1000).getTime() - Date.now();
     let remainingDays = difference / (1000 * 3600 * 24);
@@ -27,9 +29,10 @@ export const minutesLeft = (deadline) => {
     const difference = new Date(deadline * 1000).getTime() - Date.now();
     const remainingMinutesTotal = difference / (1000 * 60);
 
-    let remainingMinutes = remainingMinutesTotal % 24*60;
+    let remainingMinutes = Math.floor(remainingMinutesTotal % 60);
+    remainingMinutes = remainingMinutes + 1
 
-    if (remainingMinutes < 0) {
+    if (remainingMinutes < 1) {
         remainingMinutes = 0;
     }
 
@@ -51,3 +54,13 @@ export const checkIfImage = (url, callback) => {
     img.onload = () => callback(true);
     img.onerror = () => callback(false);
 };
+
+export const weiToEther = (weiInput) => {
+    let ethBalance = Web3.utils.fromWei(weiInput, 'ether');
+    return ethBalance;
+}
+
+export const etherToWei = (etherInput) => {
+    let ethBalance = Web3.utils.toWei(etherInput, 'ether');
+    return ethBalance;
+}

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from '../redux/blockchain/blockchainActions';
 import { fetchData } from '../redux/data/dataActions';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import CampaignCard from '../components/CampaignCard';
 import { CiCalendarDate } from 'react-icons/ci';
 import { BiUpArrowAlt } from 'react-icons/bi';
@@ -16,7 +16,6 @@ import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
 
 const Home = () => {
-    /* global BigInt */
     const [sortedCampaigns, setSortedCampaigns] = useState([])
     const [allCampaigns, setAllCampaigns] = useState([])
     
@@ -48,43 +47,43 @@ const Home = () => {
 
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const bcdata = useSelector((state) => state.data);
-    const [CONFIG, SET_CONFIG] = useState({
-        CONTRACT_ADDRESS: "",
-        CONTRACT_ADDRESS_SHL: "",
-        CONTRACT_ADDRESS_CLP: "", 
-        NETWORK: {
-            NAME: "",
-            SYMBOL: "",
-            ID: 0,
-        },
-        GAS_LIMIT: 0,
-    });
+    //const bcdata = useSelector((state) => state.data);
+    //const [CONFIG, SET_CONFIG] = useState({
+    //    CONTRACT_ADDRESS: "",
+    //    CONTRACT_ADDRESS_SHL: "",
+    //    CONTRACT_ADDRESS_CLP: "", 
+    //    NETWORK: {
+    //        NAME: "",
+    //        SYMBOL: "",
+    //        ID: 0,
+    //    },
+    //    GAS_LIMIT: 0,
+    //});
+    //
+    //const getConfig = async () => {
+    //    const configResponse = await fetch('/config/config.json', {
+    //        headers: {
+    //            'Content-Type': 'application/json',
+    //            Accept: 'application/json',
+    //        },
+    //    });
+    //    const config = await configResponse.json();
+    //    SET_CONFIG(config);
+    //};
+    //
+    //useEffect(() => {
+    //    getConfig();
+    //}, []);
 
-    const getConfig = async () => {
-        const configResponse = await fetch('/config/config.json', {
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-        });
-        const config = await configResponse.json();
-        SET_CONFIG(config);
-    };
-
-    useEffect(() => {
-        getConfig();
-    }, []);
-
-    const getData = () => {
+    const getData = useCallback(() => {
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
             dispatch(fetchData(blockchain.account));
         }
-    };
+    }, [blockchain.account, blockchain.smartContract, dispatch]);
 
     useEffect(() => {
         getData();
-    }, [blockchain.account]);
+    }, [blockchain.account, getData]);
 
     window.addEventListener('load', function () {
         startApp();
@@ -180,7 +179,7 @@ const Home = () => {
             <div className='flex flex-col md:flex-row md:gap-16 justify-center'>
                 
             <div className='mx-auto w-full md:w-auto md:max-w-[600px] md:mr-0    
-            mb-4 p-4 bg-[#13131a] rounded-[10px]'>
+            mb-4 p-4 bg-[#1C1D30] rounded-[10px]'>
                 <p className='font-medium text-[#808191] text-center mb-[10px]'>Order by</p>
                 <div className='flex flex-row'>
                     <div className='flex flex-col mx-auto px-4'>
@@ -202,7 +201,7 @@ const Home = () => {
                 </div>
             </div>
             <div className='mx-auto w-full md:w-[190px] md:ml-0 
-            mb-4 p-4 bg-[#13131a] rounded-[10px]'>
+            mb-4 p-4 bg-[#1C1D30] rounded-[10px]'>
                 <label className='text-[#808191] ml-2 font-semibold'>Campaign statuses:</label>
                 <div className='flex flex-col mt-1'>
                     <div className='flex flex-row'>
