@@ -22,7 +22,7 @@ const FormField = ({
                     required
                     value={value}
                     onChange={handleChange}
-                    rows={10}
+                    rows={15}
                     placeholder={placeholder}
                     className={`${styles} min-h-[55px] py-4 sm:px-6 px-4 outline-none border-[1px] border-[#3a3a43] bg-transparent text-[14px] placeholder:text-[#75787e] rounded-lg sm:min-w-[300px]`}
                 />

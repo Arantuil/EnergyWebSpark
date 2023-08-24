@@ -4,13 +4,13 @@ import { money } from "../assets";
 import CustomButton from "../components/CustomButton";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
+import { weiToEther, etherToWei } from '../utils/index';
 
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
-import CampaignCard from "../components/CampaignCard";
 
 const EditCampaign = () => {
     const { id } = useParams();
@@ -95,7 +95,15 @@ const EditCampaign = () => {
     const [isLoading, setIsloading] = useState(false);
 
     const handleFormFieldChange = (fieldName, e) => {
-        setForm({ ...form, [fieldName]: e.target.value });
+        if (fieldName === 'target' && parseFloat(e.target.value) > 0) {
+            setForm({ ...form, [fieldName]: etherToWei(String(e.target.value)) });
+        } 
+        else if (fieldName === 'target' && parseFloat(e.target.value) === 0 ) {
+            return null
+        } 
+        else {
+            setForm({ ...form, [fieldName]: e.target.value });
+        }
     };
 
     function dateAndTimeToUnixTimestamp(dateStr, hourStr) {
@@ -113,10 +121,13 @@ const EditCampaign = () => {
     const handleDateChange = (e) => { setDatePart(e.target.value) };
     const handleTimeChange = (e) => { setTimePart(e.target.value) };
 
+    console.log(form)
+
     const submitEditedCampaign = (e) => {
         console.log(form)
         e.preventDefault();
         setIsloading(true);
+
         blockchain.smartContract.methods
             .editCampaign(
                 id,
@@ -221,15 +232,19 @@ const EditCampaign = () => {
                     </h4>
                 </div>
                 <div className="flex flex-wrap gap-[40px]">
+                    {form.target !== undefined && form.target !== '' ? (
                     <FormField
                         disabled={false}
                         labelName="Goal (in EWT) *"
                         placeholder="100"
                         inputType="text"
-                        value={form.target}
+                        value={weiToEther(String(form.target))}
                         handleChange={(e) => handleFormFieldChange("target", e)}
                         styles={'text-white'}
                     />
+                    ) : (
+                        <></>
+                    )}
                     <div className="flex flex-wrap gap-[40px]">
                             <FormField
                                 disabled={false}

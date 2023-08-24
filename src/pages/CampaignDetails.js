@@ -1,4 +1,4 @@
-import { calculateBarPercentage, hoursLeft, daysLeft } from "../utils";
+import { calculateBarPercentage, hoursLeft, daysLeft, minutesLeft } from "../utils";
 import CustomButton from "../components/CustomButton";
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import MetamaskAccountIcon from '../components/MetamaskAccountIcon';
 import { useSelector, useDispatch } from 'react-redux';
 import { connect } from '../redux/blockchain/blockchainActions';
+import { weiToEther } from '../utils/index';
 
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
@@ -218,6 +219,30 @@ const CampaignDetails = () => {
             });
     }
 
+    const [returnContributionsInProcess, setReturnContributionsInProcess] = useState(false);
+    function handleReturnContributions() {
+        setReturnContributionsInProcess(true);
+        blockchain.smartContract.methods
+            .refundAllContributions(
+                id
+            )
+            .send({
+                gasPrice: 100000000,
+                to: CONFIG.CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: 0,
+            })
+            .then((receipt) => {
+                console.log(receipt)
+                setReturnContributionsInProcess(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                setReturnContributionsInProcess(false);
+            });
+    }
+
+
     return (
         <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
@@ -232,18 +257,22 @@ const CampaignDetails = () => {
                                 alt="campaign"
                                 className="4xs:h-[150px] 3xs:h-[200px] 2xs:h-[250px] xs:h-[300px] h-[350px] sm:h-[400px] w-full object-cover rounded-xl"
                             />
-                            <div className="rounded relative w-full h-[7px] bg-[#3a3a43] mt-2">
+                            {sortedCampaigns.amountContributed !== undefined ? (
+                            <div className="rounded relative w-full h-[9px] bg-[#3a3a43] mt-2">
                                 <div
                                     className="rounded absolute h-full bg-[#4acd8d]"
                                     style={{
                                         width: `${calculateBarPercentage(
-                                            sortedCampaigns.target,
-                                            sortedCampaigns.amountContributed / 1e18
+                                            parseFloat(weiToEther(String(sortedCampaigns.target))),
+                                            parseFloat(weiToEther(String(sortedCampaigns.amountContributed)))
                                         )}%`,
                                         maxWidth: "100%",
                                     }}
                                 ></div>
                             </div>
+                            ) : (
+                                <></>
+                            )}
                         </div>
                     </div>
 
@@ -290,14 +319,19 @@ const CampaignDetails = () => {
 
                             {blockchain.account !== null && blockchain.account !== '' ? (
                             <div>
+                                {sortedCampaigns.amountContributed !== undefined && parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) < parseFloat(weiToEther(String(sortedCampaigns.target))) && sortedCampaigns.campaignAmountWithdrawn === true ? (
+                                <h4 className="font-semibold text-[18px] text-white uppercase">
+                                    Your total contribution (returned)
+                                </h4>
+                                ) : (
                                 <h4 className="font-semibold text-[18px] text-white uppercase">
                                     Your total contribution
                                 </h4>
-
+                                )}
 
                                 <div className="mt-[20px]">
                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                        {userContributionTotal === 0 ? 0: Math.round(userContributionTotal / 1e18 * 1000) / 1000} EWT ({Math.round(((userContributionTotal/1e18/sortedCampaigns.target)*100)* 1000) / 1000}% of the target)
+                                        {userContributionTotal === 0 ? 0: Math.round(userContributionTotal / 1e18 * 1000) / 1000} EWT ({Math.round(((weiToEther(String(userContributionTotal))/weiToEther(String(sortedCampaigns.target)))*100)* 100) / 100}% of the target)
                                     </p>
                                 </div>
 
@@ -394,27 +428,46 @@ const CampaignDetails = () => {
                                 <div className="w-[95%] mx-auto">
                                     <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
                                     <div className="relative">
-                                        {sortedCampaigns.status === false ? (
+                                        {sortedCampaigns.status === false && parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) > parseFloat(weiToEther(String(sortedCampaigns.target))) ? (
                                             <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(250,204,21,0.15)]">
                                                 <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign paused</p>
                                             </div>
                                         ) : (
                                             currentTimestamp > sortedCampaigns.deadline ? (
-                                                <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(248,113,113,0.15)]">
-                                                    <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign ended</p>
-                                                </div>
+                                                parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) < parseFloat(weiToEther(String(sortedCampaigns.target))) && sortedCampaigns.campaignAmountWithdrawn === false ? (
+                                                    <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(140,109,253,0.15)]">
+                                                        <CustomButton
+                                                        btnType="button"
+                                                        disabled={returnContributionsInProcess}
+                                                        title={`${returnContributionsInProcess ? "Returning contributions..." : "Return contributions"}`}
+                                                        styles={`${returnContributionsInProcess ? "bg-[rgba(74,205,141,0.5)]" : "bg-[#4ACD8D]"} font-medium absolute p-2 rounded-xl text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap`}
+                                                        handleClick={handleReturnContributions}
+                                                    />
+                                                    </div>
+                                                ) : (
+                                                    sortedCampaigns.amountContributed !== undefined &&
+                                                    parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) < parseFloat(weiToEther(String(sortedCampaigns.target))) && sortedCampaigns.campaignAmountWithdrawn === true ? (
+                                                        <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(140,109,253,0.15)]">
+                                                            <p className="text-center font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-[25%] left-[25%] transform -translate-x-[15%] -translate-y-[0%] whitespace-break-spaces">Campaign ended, all contributions have been returned</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(140,109,253,0.15)]">
+                                                            <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign ended</p>
+                                                        </div>
+                                                    )
+                                                )
                                             ) : (
                                                 <></>
                                             )
                                         )}
                                         <div>
-                                            {sortedCampaigns.amountContributed > 0 ? (
+                                            {sortedCampaigns.amountContributed !== '0' && sortedCampaigns.amountContributed !== undefined ? (
                                                 <div className='bg-[#1C1D30] mb-[10px] rounded-lg p-1 md:p-2'>
-                                                    <p className='text-white text-[14px] text-center'>{Math.round(sortedCampaigns.amountContributed / 1e18 * 1000) / 1000} EWT <span className='font-normal text-[#808191]'>Out of</span> {sortedCampaigns.target} EWT <span className='font-normal text-[#808191]'>collected (</span>{(sortedCampaigns.amountContributed / 1e18 / sortedCampaigns.target * 100).toFixed(2)}%<span className='font-normal text-[#808191]'>)</span></p>
+                                                    <p className='text-white text-[14px] text-center'>{Math.round(weiToEther(String(sortedCampaigns.amountContributed)) * 1000) / 1000} EWT <span className='font-normal text-[#808191]'>Out of</span> {weiToEther(String(sortedCampaigns.target))} EWT <span className='font-normal text-[#808191]'>collected (</span>{(weiToEther(String(sortedCampaigns.amountContributed)) / weiToEther(String(sortedCampaigns.target)) * 100).toFixed(2)}%<span className='font-normal text-[#808191]'>)</span></p>
                                                 </div>
                                             ) : (
                                                 <div className='bg-[#1C1D30] mb-[10px] rounded-lg p-1 md:p-2'>
-                                                    <p className='text-white text-[14px] text-center'>{Math.round(0 / 1e18 * 100) / 100} EWT <span className='font-normal text-[#808191]'>Out of</span> {sortedCampaigns.target} EWT <span className='font-normal text-[#808191]'>collected (</span>0%<span className='font-normal text-[#808191]'>)</span></p>
+                                                    <p className='text-white text-[14px] text-center'>{Math.round(0 / 1e18 * 100) / 100} EWT <span className='font-normal text-[#808191]'>Out of</span> {weiToEther(String(sortedCampaigns.target))} EWT <span className='font-normal text-[#808191]'>collected (</span>0%<span className='font-normal text-[#808191]'>)</span></p>
                                                 </div>
                                             )}
                                             <input
@@ -455,7 +508,7 @@ const CampaignDetails = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="mt-[20px] p-4 bg-[#13131a] rounded-[10px]">
+                                    <div className="mt-[40px] p-4 bg-[#13131a] rounded-[10px]">
                                         <div className="flex flex-row justify-around">
                                             <div className="flex flex-col mr-2">
                                                 <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
@@ -465,12 +518,20 @@ const CampaignDetails = () => {
                                                     Days
                                                 </p>
                                             </div>
-                                            <div className="flex flex-col ml-2">
+                                            <div className="flex flex-col mx-2">
                                                 <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
                                                     {hoursLeft(sortedCampaigns.deadline)}
                                                 </h4>
                                                 <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                                     Hours
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col ml-2">
+                                                <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
+                                                    {minutesLeft(sortedCampaigns.deadline)}
+                                                </h4>
+                                                <p className="mt-[3px] font-normal text-[12px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                                    Minutes
                                                 </p>
                                             </div>
                                         </div>

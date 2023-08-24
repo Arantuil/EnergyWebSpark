@@ -5,6 +5,7 @@ import FormField from "../components/FormField";
 import Loader from "../components/Loader";
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
+import { etherToWei } from '../utils/index';
 
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useSelector, useDispatch } from 'react-redux';
@@ -39,7 +40,6 @@ const CreateCampaign = () => {
         getConfig();
     }, []);
 
-    //const { createCampaign } = useStateContext();
     const [isloading, setIsloading] = useState(false);
     const [form, setForm] = useState({
         name: "",
@@ -106,7 +106,14 @@ const CreateCampaign = () => {
     }, [makeShot]);
 
     const [creatingCampaign, setCreatingCampaign] = useState(false);
+    const [errorHappend, setErrorhappend] = useState(false)
     const createCampaign = (e) => {
+        if (form.name !== '' && 
+            form.title !== '' &&
+            form.description !== '' &&
+            form.target !== '' && 
+            form.deadline !== 'T0'
+        ) {
         e.preventDefault();
         setCreatingCampaign(true);
         
@@ -116,7 +123,7 @@ const CreateCampaign = () => {
                 form.name,
                 form.title,
                 form.description,
-                form.target,
+                etherToWei(form.target),
                 convertToUnixTimestamp(form.deadline),
                 form.image
             )
@@ -138,6 +145,12 @@ const CreateCampaign = () => {
                 console.error(error);
                 setCreatingCampaign(false);
             });
+        } else {
+            setErrorhappend(true);
+            setTimeout(function () {
+                setErrorhappend(false);
+            }, 10000);
+        }
     };
 
     console.log(form)
@@ -191,14 +204,14 @@ const CreateCampaign = () => {
                         <FormField
                             disabled={false}
                             labelName="Description *"
-                            placeholder="Write your campaign's description"
+                            placeholder="Write your campaign's description, please write as many details of your idea or initiative: what your goals are and how you are going to accomplish those"
                             isTextArea
                             value={form.description}
                             handleChange={(e) => handleFormFieldChange("description", e)}
                             styles={'text-white'}
                         />
 
-                        <div className="w-full flex justify-center items-center p-4 bg-[#8C6DFD] h-[100px] rounded-[10px]">
+                        <div className="w-full flex justify-center items-center p-4 bg-[rgb(140,109,253)] h-[100px] rounded-[10px]">
                             <img
                                 src={money}
                                 alt="money"
@@ -249,6 +262,9 @@ const CreateCampaign = () => {
                             styles={'text-white'}
                         />
                         <p className='text-[#808191] text-[12px]'>For best image compatibility: use a horizontal rectangle image where the main content is mostly in the middle of the image, also make sure the image url is a direct url to the image.</p>
+                        
+                        <p className='text-center text-white text-[16px]'>{errorHappend === true ? 'Error: Please complete the campaign creation form' : ''}</p>
+
                         {creatingCampaign === false ? (
                         <div className="flex justify-center items-center mt-[30px]">
                             <CustomButton
