@@ -72,10 +72,12 @@ const Profile = () => {
                 </div>
             ) : (
                 <div>
-                    <div className="mb-4 sm:mb-8 md:mb-12 mt-6 sm:mt-8 p-4 bg-[#13131a] rounded-[10px]">
-                        <h1 className="text-center font-semibold text-[18px] sm:text-[22px] leading-[38px] text-white">
-                            To view your campaigns you first have to connect
-                        </h1>
+                    <div className='flex justify-center'>
+                        <div className="inline-block mb-4 sm:mb-8 md:mb-12 mt-6 sm:mt-8 p-4 bg-[#13131a] rounded-[10px]">
+                            <h1 className="text-center font-semibold text-[18px] sm:text-[22px] leading-[38px] text-white">
+                                To view your campaigns you first have to connect
+                            </h1>
+                        </div>
                     </div>
                     <div className='mt-[20px]'>
                         <div className='flex justify-center'>

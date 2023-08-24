@@ -4,7 +4,7 @@ import CustomButton from "./CustomButton";
 import { connect } from '../redux/blockchain/blockchainActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchData } from '../redux/data/dataActions';
-import { createCampaign, dashboard, withdraw, logo, menu, search, profile, profileGray } from "../assets";
+import { search, profileGray } from "../assets";
 import { debounce } from 'lodash';
 import MetamaskAccountIcon from './MetamaskAccountIcon';
 
@@ -48,7 +48,7 @@ const Navbar = () => {
 
     const dispatch = useDispatch();
     const blockchain = useSelector((state) => state.blockchain);
-    const bcdata = useSelector((state) => state.data);
+    //const bcdata = useSelector((state) => state.data);
 
     const getData = () => {
         if (blockchain.account !== "" && blockchain.smartContract !== null) {
@@ -65,10 +65,17 @@ const Navbar = () => {
             <div className="flex relative ml-0 mr-auto h-full bg-[#282945] rounded-xl">
                 <input
                     type="text"
-                    placeholder="search"
+                    placeholder="Search"
                     value={searchTerm}
                     onChange={handleInputChange}
-                    className="flex text-center w-full lg:w-[200px] xl:w-[250px] 2xl:w-[300px] font-normal text-[12px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
+                    className="flex md:hidden text-center w-full md:w-[180px] lg:w-[200px] xl:w-[225px] font-normal text-[12px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
+                />
+                <input
+                    type="text"
+                    placeholder="Search on title or username"
+                    value={searchTerm}
+                    onChange={handleInputChange}
+                    className="hidden md:flex text-center w-full md:w-[180px] lg:w-[200px] xl:w-[225px] font-normal text-[12px] placeholder:text-[#75787e] text-white bg-transparent outline-none"
                 />
                 {searchTerm !== '' ? (
                     <ul className='3xs:translate-y-[40px] 2xs:translate-y-[45px] xs:translate-y-[50px] translate-y-[60px]
@@ -97,7 +104,7 @@ const Navbar = () => {
                 <CustomButton
                     btnType="button"
                     title={blockchain.account ? "Create a campaign" : "Connect"}
-                    styles={blockchain.account ? "2xs:text-[12px] 3xs:text-[10px] 2xs:px-2 active:brightness-105 bg-[#8C6DFD] 2xs:mr-0 xs:mr-1 mr-2 sm:mr-4" : "2xs:text-[12px] 3xs:text-[10px] 2xs:px-2 animate-pulseSlow active:brightness-105 bg-[#8c6dfd] 2xs:mr-0 xs:mr-1 mr-2 sm:mr-4"}
+                    styles={blockchain.account ? "2xs:text-[12px] 3xs:text-[10px] 2xs:px-2 3xs:px-[6px] 4xs:px-1 active:brightness-105 bg-[#8C6DFD] 2xs:mr-0 xs:mr-1 mr-2 sm:mr-4" : "2xs:text-[12px] 3xs:text-[10px] 2xs:px-2 animate-pulseSlow active:brightness-105 bg-[#8c6dfd] 2xs:mr-0 xs:mr-1 mr-2 sm:mr-4"}
                     handleClick={() => {
                         if (blockchain.account) navigate("create-campaign");
                         else {

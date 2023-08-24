@@ -1,4 +1,5 @@
-import { calculateBarPercentage, hoursLeft, daysLeft } from "../utils";
+import { calculateBarPercentage, hoursLeft, daysLeft, minutesLeft } from "../utils";
+import { weiToEther } from '../utils/index';
 import { profile } from '../assets'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -63,11 +64,9 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
         navigate('/edit-campaign/' + String(idOfCampaign))
     }
 
-    console.log(currentTimestamp>deadline)
-
     return (
         isProfilePage === true ? (
-            <div className="max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]">
+            <div className="max-w-[95%] w-full sm:w-[300px] m-2 sm:m-4 rounded-xl bg-[#1C1D30]">
                 {deadline > currentTimestamp && status === true ? (
                     <div>
                         <div className='absolute ml-2 mt-2 rounded-full w-4 h-4 4xs:w-3 4xs:h-3 bg-green-400'>
@@ -89,20 +88,24 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                 <img
                     src={image}
                     alt="fund"
-                    className="cursor-pointer w-full h-[160px] object-cover rounded-xl"
+                    className="cursor-pointer w-full h-[180px] object-cover rounded-xl"
                     onClick={() => { navigate('/campaigns/' + String(id)) }}
 
                 />
-                <div className='translate-y-[-4px] relative rounded h-[4px] w-full bg-[#3a3a43]'>
+                {target !== undefined && amountContributed !== undefined ? (
+                <div className='translate-y-[-2px] relative rounded h-[5px] w-full bg-[#3a3a43]'>
                     <div style={{
                         width: `${calculateBarPercentage(
-                            target,
-                            amountContributed/1e18
+                            parseFloat(weiToEther(String(target))),
+                            parseFloat(weiToEther(String(amountContributed)))
                         )}%`,
                         maxWidth: "100%",
                     }}
                         className='absolute h-full rounded bg-[#1DC071]'></div>
                 </div>
+                ) : (
+                    <></>
+                )}
 
                 <div className="flex flex-col p-4 4xs:p-3">
                     <div className="block">
@@ -125,11 +128,11 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     0 EWT
                                 </h4>
                             )}
-                            <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
-                                Raised out of {target} EWT
+                            <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[150px] truncate">
+                                Raised out of {weiToEther(String(target))} EWT
                             </p>
                         </div>
-                        <div className="4xs:hidden flex flex-row">
+                        <div className="3xs:hidden flex flex-row">
                             <div className="flex flex-col mr-2">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {daysLeft(deadline)}
@@ -138,7 +141,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     Days
                                 </p>
                             </div>
-                            <div className="flex flex-col ml-2">
+                            <div className="flex flex-col mx-2">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {hoursLeft(deadline)}
                                 </h4>
@@ -146,9 +149,17 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     Hours
                                 </p>
                             </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {minutesLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    Min.
+                                </p>
+                            </div>
                         </div>
-                        <div className="hidden 4xs:flex flex-row">
-                            <div className="flex flex-col mr-2">
+                        <div className="hidden 3xs:flex flex-row">
+                            <div className="flex flex-col mr-2 5xs:mr-1">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {daysLeft(deadline)}
                                 </h4>
@@ -156,12 +167,20 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     D
                                 </p>
                             </div>
-                            <div className="flex flex-col ml-2">
+                            <div className="flex flex-col mx-2 5xs:ml-1 5xs:mr-0">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {hoursLeft(deadline)}
                                 </h4>
                                 <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                     H
+                                </p>
+                            </div>
+                            <div className="5xs:hidden flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {minutesLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    M
                                 </p>
                             </div>
                         </div>
@@ -179,9 +198,15 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                             Withdrawn
                                         </button>
                                     ) : (
+                                        amountContributed !== undefined && target !== undefined && parseFloat(weiToEther(String(amountContributed))) > parseFloat(weiToEther(String(target))) ? (
                                         <button onClick={withdrawFundsFromCampaign} className="hover:brightness-110 bg-[#8C6DFD] p-[2px] sm:p-1 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
                                             Withdraw
                                         </button>
+                                        ) : (
+                                        <button onClick={withdrawFundsFromCampaign} disabled={true} className="cursor-default grayscale bg-[#8C6DFD] p-[2px] sm:p-1 rounded-md mx-auto w-[85px] 4xs:w-[80px] mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-white">
+                                            Withdraw
+                                        </button>
+                                        )
                                     )
                                 ) : (
                                     withdrawing === true ? (
@@ -228,7 +253,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
             </div>
         ) : (
             <div
-                className="hover:brightness-110 max-w-[95%] w-full sm:w-[270px] m-2 sm:m-4 rounded-xl bg-[#1C1D30] cursor-pointer"
+                className="hover:brightness-110 max-w-[95%] w-full sm:w-[300px] m-2 sm:m-4 rounded-xl bg-[#1C1D30] cursor-pointer"
                 onClick={() => { navigate('campaigns/' + String(id)) }}
             >
                 {deadline > currentTimestamp && status === true ? (
@@ -243,19 +268,23 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                 <img
                     src={image}
                     alt="fund"
-                    className="w-full h-[160px] object-cover rounded-xl"
+                    className="w-full h-[180px] object-cover rounded-xl"
 
                 />
-                <div className='translate-y-[-4px] relative rounded h-[4px] w-full bg-[#3a3a43]'>
+                {target !== undefined && amountContributed !== undefined ? (
+                <div className='translate-y-[-2px] relative rounded h-[5px] w-full bg-[#3a3a43]'>
                     <div style={{
                         width: `${calculateBarPercentage(
-                            target,
-                            amountContributed/1e18
+                            parseFloat(weiToEther(String(target))),
+                            parseFloat(weiToEther(String(amountContributed)))
                         )}%`,
                         maxWidth: "100%",
                     }}
                         className='absolute h-full rounded bg-[#1DC071]'></div>
                 </div>
+                ) : (
+                    <></>
+                )}
 
                 <div className="flex flex-col p-4 4xs:p-3 5xs:p-2 6xs:p-1">
                     <div className="block">
@@ -278,11 +307,11 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     0 EWT
                                 </h4>
                             )}
-                            <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
-                                Raised out of {target} EWT
+                            <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[150px] truncate">
+                                Raised out of {weiToEther(String(target))} EWT
                             </p>
                         </div>
-                        <div className="4xs:hidden flex flex-row">
+                        <div className="3xs:hidden flex flex-row">
                             <div className="flex flex-col mr-2">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {daysLeft(deadline)}
@@ -291,7 +320,7 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     Days
                                 </p>
                             </div>
-                            <div className="flex flex-col ml-2">
+                            <div className="flex flex-col mx-2">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {hoursLeft(deadline)}
                                 </h4>
@@ -299,8 +328,16 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                     Hours
                                 </p>
                             </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {minutesLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    Min.
+                                </p>
+                            </div>
                         </div>
-                        <div className="hidden 4xs:flex flex-row">
+                        <div className="hidden 3xs:flex flex-row">
                             <div className="flex flex-col mr-2">
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
                                     {daysLeft(deadline)}
@@ -315,6 +352,14 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                                 </h4>
                                 <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
                                     H
+                                </p>
+                            </div>
+                            <div className="flex flex-col ml-2">
+                                <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
+                                    {minutesLeft(deadline)}
+                                </h4>
+                                <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[120px] truncate">
+                                    M
                                 </p>
                             </div>
                         </div>
