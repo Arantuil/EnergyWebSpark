@@ -294,7 +294,7 @@ const CreateCampaign = () => {
                             To start a crowdfunding campaign you first have to connect
                         </h1>
                     </div>
-                    <div className='flex flex-col'>
+                    <div className='translate-y-[20px] flex flex-col'>
                         <CustomButton
                             btnType="button"
                             title="Connect"

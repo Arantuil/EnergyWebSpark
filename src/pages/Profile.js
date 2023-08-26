@@ -63,8 +63,8 @@ const Profile = () => {
                         ))}
                     </div>
                     ) : (
-                        <div className="mb-4 sm:mb-8 md:mb-12 mt-6 sm:mt-8 p-4 bg-[#13131a] rounded-[10px]">
-                            <h1 className="text-center font-semibold text-[18px] sm:text-[22px] leading-[38px] text-white">
+                        <div className="mb-4 sm:mb-8 md:mb-12 mt-6 sm:mt-8">
+                            <h1 className="text-center font-medium text-[#808191] text-[20px]">
                                 You have not created any campaigns yet
                             </h1>
                         </div>
