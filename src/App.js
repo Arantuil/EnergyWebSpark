@@ -19,12 +19,15 @@ import Offline from './pages/Offline';
 // components
 import Navbar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
+import Footer from './components/Footer';
 
 function App() {
   const [isOffline, setIsOffline] = useState(false);
 
   const [currentTimestamp, setCurrentTimestamp] = useState(Math.floor(Date.now() / 1000));
-  const openTimestamp = 1693054800
+  
+  //const openTimestamp = 1692054800
+  const openTimestamp = 1693054800 // launch date
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -35,20 +38,31 @@ function App() {
 
   return (
     isOffline === false && currentTimestamp > openTimestamp ? (
-    <div className="xs:p-2 p-3 sm:p-6 md:p-8 relative bg-[#1C1D30] min-h-screen flex flex-row">
-      <Provider store={store}>
-        <Router>
-          <Sidebar />
-          <Navbar />
-          <Routes>
-            <Route exact path="/" element={<Home />} />
-            <Route exact path="/create-campaign" element={<CreateCampaign />} />
-            <Route path="/edit-campaign/:id" element={<EditCampaign />} />
-            <Route path="/campaigns/:id" element={<CampaignDetails />} />
-            <Route exact path="/profile" element={<Profile />} />
-          </Routes>
-        </Router>
-      </Provider>
+    <div>
+      <div className="flex flex-row relative bg-[#1C1D30] 
+      xs:px-2 px-3 sm:px-6 md:px-8 
+      xs:pt-2 pt-3 sm:pt-6 md:pt-8 
+      xs:pb-3 pb-4 sm:pb-5 md:pb-6 
+
+      xs:min-h-[calc(100vh-40px)] 
+      min-h-[calc(100vh-48px)] 
+      sm:min-h-[calc(100vh-56px)] 
+      md:min-h-[calc(100vh-64px)]">
+        <Provider store={store}>
+          <Router>
+            <Sidebar />
+            <Navbar />
+            <Routes>
+              <Route exact path="/" element={<Home />} />
+              <Route exact path="/create-campaign" element={<CreateCampaign />} />
+              <Route path="/edit-campaign/:id" element={<EditCampaign />} />
+              <Route path="/campaigns/:id" element={<CampaignDetails />} />
+              <Route exact path="/profile" element={<Profile />} />
+            </Routes>
+          </Router>
+        </Provider>
+      </div>
+      <Footer />
     </div>
     ) : (
       <div className="xs:px-2 px-3 sm:px-6 md:px-8 relative justify-center bg-[#1C1D30] min-h-[100%] flex flex-row">
