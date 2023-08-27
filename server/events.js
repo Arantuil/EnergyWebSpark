@@ -5,6 +5,9 @@ const serviceAccount = require("./ewccrowdfunding-firebase-adminsdk-2b1q4-51eaa4
 const app = express();
 const port = 8082;
 const ethers = require("ethers");
+const axios = require('axios');
+const keys = require('./keys');
+const Web3 = require('web3');
 
 const contractAddress = config.contractAddress;
 const contractAbi = [{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"}],"name":"AllContributionsWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"}],"name":"AllContributionsWithdrawnTargetNotReached","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"},{"indexed":false,"internalType":"string","name":"title","type":"string"},{"indexed":false,"internalType":"string","name":"description","type":"string"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"bool","name":"campaignAmountWithdrawn","type":"bool"},{"indexed":false,"internalType":"string","name":"image","type":"string"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"CampaignCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"},{"indexed":false,"internalType":"string","name":"title","type":"string"},{"indexed":false,"internalType":"string","name":"description","type":"string"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"string","name":"image","type":"string"}],"name":"CampaignEdited","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"CampaignStatusChanged","type":"event"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"contributeToCampaign","outputs":[],"stateMutability":"payable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"contributor","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountContributed","type":"uint256"}],"name":"ContributionMade","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"campaignId","type":"uint256"},{"indexed":false,"internalType":"address","name":"contributor","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountContributed","type":"uint256"}],"name":"ContributionTakenBack","type":"event"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"},{"internalType":"string","name":"_username","type":"string"},{"internalType":"string","name":"_title","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"uint256","name":"_deadline","type":"uint256"},{"internalType":"string","name":"_image","type":"string"}],"name":"createCampaign","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"string","name":"_title","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"uint256","name":"_deadline","type":"uint256"},{"internalType":"string","name":"_image","type":"string"}],"name":"editCampaign","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"bool","name":"_status","type":"bool"}],"name":"editCampaignStatus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"refundAllContributions","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"_feeAddress","type":"address"}],"name":"setFeeAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_feePoints","type":"uint256"}],"name":"setFeePoints","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"takeBackContribution","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"withdrawContributions","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"campaigns","outputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"string","name":"username","type":"string"},{"internalType":"string","name":"title","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"target","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint256","name":"amountCollected","type":"uint256"},{"internalType":"bool","name":"campaignAmountWithdrawn","type":"bool"},{"internalType":"string","name":"image","type":"string"},{"internalType":"bool","name":"status","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feePoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCampaigns","outputs":[{"components":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"string","name":"username","type":"string"},{"internalType":"string","name":"title","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint256","name":"target","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint256","name":"amountCollected","type":"uint256"},{"internalType":"bool","name":"campaignAmountWithdrawn","type":"bool"},{"internalType":"string","name":"image","type":"string"},{"internalType":"address[]","name":"funders","type":"address[]"},{"internalType":"uint256[]","name":"contributions","type":"uint256[]"},{"internalType":"bool","name":"status","type":"bool"}],"internalType":"struct EnergyWebSparkV1.Campaign[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getContributors","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"numberOfCampaigns","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
@@ -17,7 +20,17 @@ admin.initializeApp({
 });
 const db = admin.database();
 
-contract.on("CampaignCreated", (
+const weiToEther = (weiInput) => {
+    let ethBalance = Web3.utils.fromWei(weiInput, 'ether');
+    return ethBalance;
+}
+
+const etherToWei = (etherInput) => {
+    let ethBalance = Web3.utils.toWei(etherInput, 'ether');
+    return ethBalance;
+}
+
+contract.on("CampaignCreated", async (
     _campaignId, _owner, _username, _title, _description, _target, _deadline, _campaignAmountWithdrawn, _image, _status) => {
     try {
         console.log(`Campaign created with ID: ${_campaignId.toString()}`);
@@ -35,6 +48,18 @@ contract.on("CampaignCreated", (
             image: _image.toString(),
             status: _status
         });
+
+        try {
+            const message = `New campaign created:\nTitle: ${_title}\nDescription: ${_description}\nTarget: ${weiToEther(String(_target))} EWT`;
+            const imageUrl = _image;
+            
+            const telegramApiUrl = `https://api.telegram.org/bot${keys.telegramBotToken}/sendPhoto?chat_id=${keys.chatId}&caption=${encodeURIComponent(message)}&photo=${encodeURIComponent(imageUrl)}`;
+        
+            await axios.get(telegramApiUrl);
+        } catch (error) {
+            console.error(error);
+        }
+
     } catch (error) {
         console.error("Error in CampaignCreated event:", error);
     }
@@ -91,6 +116,16 @@ contract.on("ContributionMade", async (
         rootref.update({
             amountContributed: Number(_amountContributed) + currentDonatedAmount
         });
+
+        try {
+            const message = `Contribution made to a campaign:\ncampaign ID: ${_campaignId}\nContributor: ${_contributor}\nAmount contributed: ${weiToEther(String(_amountContributed))} EWT`;
+            const telegramApiUrl = `https://api.telegram.org/bot${keys.telegramBotToken}/sendMessage?chat_id=${keys.chatId}&text=${encodeURIComponent(message)}`;
+    
+            await axios.get(telegramApiUrl);
+        } catch (error) {
+            console.error(error)
+        }
+        
     } catch (error) {
         console.error("Error in ContributionMade event:", error);
     }
@@ -140,6 +175,15 @@ contract.on("ContributionTakenBack", async (
             newRef2.update({
                 amountContributed: currentDonatedAmount - Number(_amountContributed)
             });
+        }
+
+        try {
+            const message = `Contribution taken back from a campaign:\ncampaign ID: ${_campaignId}\nContributor: ${_contributor}\nContribution amount taken back: ${weiToEther(String(_amountContributed))} EWT`;
+            const telegramApiUrl = `https://api.telegram.org/bot${keys.telegramBotToken}/sendMessage?chat_id=${keys.chatId}&text=${encodeURIComponent(message)}`;
+    
+            await axios.get(telegramApiUrl);
+        } catch (error) {
+            console.error(error)
         }
         
     } catch (error) {
