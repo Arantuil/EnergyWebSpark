@@ -7,6 +7,7 @@ import CustomButton from '../components/CustomButton';
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
 
+import AccountIcon from '../components/AccountIcon';
 import { ERC725 } from '@erc725/erc725.js';
 import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json';
 import { profile, profileGray } from '../assets/index'
@@ -83,6 +84,36 @@ const Profile = () => {
                             Your profile
                         </h1>
                     </div>
+                    <div className='mx-auto mt-6 sm:mt-8 bg-offBlackDarker flex flex-col w-fit h-fit p-4 md:p-6 lg:p-8 rounded-xl'>
+                                <a target='_blank' href={`https://wallet.universalprofile.cloud/${blockchain.account}`}>
+                                    <img className='absolute w-[20px] h-[20px] ml-auto mr-0' src={upLogoColored} />
+                                </a>
+                                <div className='flex justify-center'>
+                                    <a target='_blank' href={`https://wallet.universalprofile.cloud/${blockchain.account}`}>
+                                        <div className='p-2 w-[72px] h-[72px] border-[3px] border-primary rounded-full'>
+                                            <AccountIcon size={48} address={blockchain.account} />
+                                        </div>
+                                    </a>
+                                </div>
+                                <div className='mt-4 text-secondary text-xl md:text-2xl text-center'>
+                                    {accountInfo !== null ? (
+                                        <p>Your username: <span className='font-semibold'>{accountInfo.LSP3Profile.name}</span></p>
+                                    ) : (
+                                        <p>Connect to see profile name</p>
+                                    )}
+                                </div>
+                                <div className='text-secondary text-xl md:text-2xl text-center'>
+                                    {accountInfo !== null ? (
+                                        accountInfo.LSP3Profile.description == "" ? (
+                                            <p className='text-midGrey'>No description</p>
+                                        ) : (
+                                            <p>Your profile description: <span className='font-semibold'>{accountInfo.LSP3Profile.description}</span></p>
+                                        )
+                                    ) : (
+                                        <p>Connect to see profile description</p>
+                                    )}
+                                </div>
+                            </div>
                     {filteredCampaigns.length > 0 ? (
                     <div className='mt-[20px] flex justify-center content-start flex-row flex-wrap'>
                         {filteredCampaigns.map((cardInfo) => (
@@ -107,7 +138,7 @@ const Profile = () => {
                             <div className='mx-auto mt-6 sm:mt-8 bg-offBlackDarker flex flex-col w-fit h-fit p-4 md:p-6 lg:p-8 rounded-xl'>
                                 <img className='absolute w-[20px] h-[20px] ml-auto mr-0' src={upLogoColored} />
                                 <div className='flex justify-center'>
-                                    <div className='p-2 w-[64px] h-[64px] md:w-[80px] md:h-[80px] border-[4px] border-primary rounded-full'>
+                                    <div className='p-2 w-[72px] h-[72px] border-[3px] border-primary rounded-full'>
                                         <img className='w-full h-full' src={profile} alt="" />
                                     </div>
                                 </div>
@@ -163,7 +194,7 @@ const Profile = () => {
                     <div className='mx-auto mt-6 sm:mt-8 bg-offBlackDarker flex flex-col w-fit h-fit p-4 md:p-6 lg:p-8 rounded-xl'>
                                 <img className='absolute w-[20px] h-[20px] ml-auto mr-0' src={upLogoColored} />
                                 <div className='flex justify-center'>
-                                    <div className='p-2 w-[64px] h-[64px] md:w-[80px] md:h-[80px] border-[4px] border-primary rounded-full'>
+                                    <div className='p-2 w-[72px] h-[72px] border-[3px] border-primary rounded-full'>
                                         <img className='w-full h-full' src={profileGray} alt="" />
                                     </div>
                                 </div>

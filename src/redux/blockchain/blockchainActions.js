@@ -49,14 +49,12 @@ export const connect = () => {
     });
     const CONFIG = await configResponse.json();
     const { ethereum } = window;
-    console.log(ethereum)
       Web3EthContract.setProvider(ethereum);
       let web3 = new Web3(ethereum);
       try {
         const accounts = await ethereum.request({
           method: "eth_requestAccounts",
         });
-        console.log(accounts)
         //const networkId = await ethereum.request({
         //  method: "net_version",
         //});

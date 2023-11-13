@@ -121,15 +121,15 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         <div className="flex flex-col">
                             {amountContributed > 0 ? (
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
-                                    {Math.round(amountContributed/1e18 * 1000) / 1000} EWT
+                                    {Math.round(amountContributed/1e18 * 1000) / 1000} LYX
                                 </h4>
                             ) : (
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
-                                    0 EWT
+                                    0 LYX
                                 </h4>
                             )}
                             <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[150px] truncate">
-                                Raised out of {weiToEther(String(target))} EWT
+                                Raised out of {weiToEther(String(target))} LYX
                             </p>
                         </div>
                         <div className="3xs:hidden flex flex-row">
@@ -300,15 +300,15 @@ const CampaignCard = ({ id, styles, title, image, owner, username, description, 
                         <div className="flex flex-col">
                             {amountContributed > 0 ? (
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
-                                    {Math.round(amountContributed/1e18 * 100) / 100} EWT
+                                    {Math.round(amountContributed/1e18 * 100) / 100} LYX
                                 </h4>
                             ) : (
                                 <h4 className="font-semibold text-[14px] 4xs:text-[13px] text-[#b2b3bd] leading-[22px]">
-                                    0 EWT
+                                    0 LYX
                                 </h4>
                             )}
                             <p className="mt-[3px] font-normal text-[12px] 4xs:text-[11px] leading-[20px] text-[#808191] sm:max-w-[150px] truncate">
-                                Raised out of {weiToEther(String(target))} EWT
+                                Raised out of {weiToEther(String(target))} LYX
                             </p>
                         </div>
                         <div className="3xs:hidden flex flex-row">

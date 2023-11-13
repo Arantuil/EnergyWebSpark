@@ -118,6 +118,7 @@ const CreateCampaign = () => {
         ) {
         e.preventDefault();
         setCreatingCampaign(true);
+        setIsloading(true)
         
         blockchain.smartContract.methods
             .createCampaign(
@@ -142,10 +143,12 @@ const CreateCampaign = () => {
                     navigate("/")
                 }, 5000);
                 setCreatingCampaign(false);
+                setIsloading(false)
             })
             .catch((error) => {
                 console.error(error);
                 setCreatingCampaign(false);
+                setIsloading(false)
             });
         } else {
             setErrorhappend(true);
@@ -233,7 +236,7 @@ const CreateCampaign = () => {
                             {accountInfo === null ? (
                             <FormField
                                 disabled={false}
-                                labelName="Your Name *"
+                                labelName="Your universal profile name *"
                                 placeholder="Username"
                                 inputType="text"
                                 value={form.name}
@@ -243,11 +246,10 @@ const CreateCampaign = () => {
                             ) : (
                             <FormField
                                 disabled={false}
-                                labelName="Your Name *"
+                                labelName="Your universal profile name *"
                                 placeholder="Username"
                                 inputType="text"
                                 value={accountInfo.LSP3Profile.name}
-                                handleChange={(e) => handleFormFieldChange("name", e)}
                                 styles={'text-secondary'}
                             />
                             )}
@@ -263,7 +265,7 @@ const CreateCampaign = () => {
                         </div>
                         <FormField
                             disabled={false}
-                            labelName="Description *"
+                            labelName="Description * (Add a # before a line to create a header, and create new lines by ending a line with a .)"
                             placeholder="Write your campaign's description, please write as many details of your idea or initiative: what your goals are and how you are going to accomplish those"
                             isTextArea
                             value={form.description}
@@ -366,7 +368,7 @@ const CreateCampaign = () => {
                 </div>
             ) : (
                 <div>
-                    <div className="mb-4 sm:mb-8 md:mb-12 mt-6 sm:mt-8 p-4 bg-[#13131a] rounded-[10px]">
+                    <div className="mb-4 sm:mb-8 md:mb-12 mt-6 sm:mt-8 p-4 bg-offBlackDarker rounded-[10px]">
                         <h1 className="font-semibold text-[18px] sm:text-[22px] leading-[38px] text-secondary">
                             To start a crowdfunding campaign you first have to connect
                         </h1>
@@ -375,7 +377,7 @@ const CreateCampaign = () => {
                         <CustomButton
                             btnType="button"
                             title="Connect"
-                            styles="text-lg sm:text-xl md:text-2xl flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#44BDD0] rounded-[10px] animate-pulseSlow active:brightness-105 bg-[#8c6dfd] mx-auto"
+                            styles="text-lg sm:text-xl md:text-2xl flex justify-center items-center p-[16px] sm:min-w-[380px] bg-primary rounded-[10px] animate-pulseSlow hover:brightness-110 bg-primary mx-auto"
                             handleClick={() => {
                                 dispatch(connect());
                             }}

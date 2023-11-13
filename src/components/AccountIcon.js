@@ -1,7 +1,7 @@
 import React from 'react';
 import Jazzicon from 'react-jazzicon';
 
-const MetamaskAccountIcon = ({ address, size, styles }) => {
+const AccountIcon = ({ address, size, styles }) => {
     const addressNumber = parseInt(address.slice(2, 10), 16);
 
     return (
@@ -11,4 +11,4 @@ const MetamaskAccountIcon = ({ address, size, styles }) => {
     );
 };
 
-export default MetamaskAccountIcon;
+export default AccountIcon;

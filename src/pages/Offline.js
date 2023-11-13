@@ -71,7 +71,7 @@ const Offline = ({ difference }) => {
                     <div className='mt-[20px] max-w-[90%] md:max-w-[900px]'>
                         <p>
                             The website is temporarily offline, you can always interact with the dapp directly on the block explorer: <a
-                                className='break-words text-[#8D6DFD] hover:brightness-125'
+                                className='break-words text-secondary hover:brightness-110'
                                 target="_blank"
                                 rel="noreferrer"
                                 href={`https://explorer.energyweb.org/token/${CONFIG.CONTRACT_ADDRESS}/token-transfers`}>EnergyWebSpark contract</a>

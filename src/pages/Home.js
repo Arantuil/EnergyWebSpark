@@ -174,27 +174,27 @@ const Home = () => {
                 <div className='flex flex-col mt-1'>
                     <div className='flex flex-row'>
                         <div onClick={filterCampaignsStatusActive} className='border-[2px] border-primary rounded-full ml-2'>
-                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-4 h-4 bg-green-300'></div>
+                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-3.5 h-3.5 bg-green-300'></div>
                         </div>
-                        <label className='text-secondary leading-[16px] ml-2 translate-y-[3px]'>Active</label>
+                        <label className='text-secondary leading-[15px] ml-2 translate-y-[2px]'>Active</label>
                     </div>
                     <div className='flex flex-row mt-2'>
                         <div onClick={filterCampaignsStatusPaused} className='border-[2px] border-primary rounded-full ml-2'>
-                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-4 h-4 bg-yellow-300'></div>
+                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-3.5 h-3.5 bg-yellow-300'></div>
                         </div>
-                        <label className='text-secondary leading-[16px] ml-2 translate-y-[3px]'>Paused</label>
+                        <label className='text-secondary leading-[15px] ml-2 translate-y-[2px]'>Paused</label>
                     </div>
                     <div className='flex flex-row mt-2'>
                         <div onClick={filterCampaignsStatusEnded} className='border-[2px] border-primary rounded-full ml-2'>
-                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-4 h-4 bg-red-300'></div>
+                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-3.5 h-3.5 bg-red-300'></div>
                         </div>
-                        <label className='text-secondary leading-[16px] ml-2 translate-y-[3px]'>Ended</label>
+                        <label className='text-secondary leading-[15px] ml-2 translate-y-[2px]'>Ended</label>
                     </div>
                     <div className='flex flex-row mt-2'>
                         <div onClick={filterCampaignsStatusAll} className='border-[2px] border-primary rounded-full ml-2'>
-                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-4 h-4 bg-gray-300'></div>
+                            <div className='m-[2px] cursor-pointer active:brightness-110 rounded-full w-3.5 h-3.5 bg-gray-300'></div>
                         </div>
-                        <label className='text-secondary leading-[16px] ml-2 translate-y-[3px]'>Show all</label>
+                        <label className='text-secondary leading-[15px] ml-2 translate-y-[2px]'>Show all</label>
                     </div>
                 </div>
             </div>

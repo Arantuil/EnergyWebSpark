@@ -3,10 +3,11 @@ import CustomButton from "../components/CustomButton";
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import { useParams } from 'react-router-dom';
-import MetamaskAccountIcon from '../components/MetamaskAccountIcon';
+import AccountIcon from '../components/AccountIcon';
 import { useSelector, useDispatch } from 'react-redux';
 import { connect } from '../redux/blockchain/blockchainActions';
 import { weiToEther } from '../utils/index';
+import Loader from "../components/Loader";
 
 import { db } from '../firebase';
 import { onValue, ref } from 'firebase/database';
@@ -169,8 +170,10 @@ const CampaignDetails = () => {
         getUserContributionTotal();
     }, [contributorEntries, blockchain.account]);
 
+    const [isloading, setIsLoading] = useState(false);
     const handleDonate = () => {
         setContributionInProcess(true);
+        setIsLoading(true)
         blockchain.smartContract.methods
             .contributeToCampaign(
                 id
@@ -187,16 +190,19 @@ const CampaignDetails = () => {
                 console.log(receipt)
                 setContributionInProcess(false);
                 setTimeout(fire, 1000);
+                setIsLoading(false)
             })
             .catch((error) => {
                 console.error(error);
                 setContributionInProcess(false);
+                setIsLoading(false)
             });
     };
 
     const [takingBackContributionInProcess, setTakingBackContributionInProcess] = useState(false);
     function userTakeBackContributions() {
         setTakingBackContributionInProcess(true);
+        setIsLoading(true)
         blockchain.smartContract.methods
             .takeBackContribution(
                 id
@@ -212,16 +218,19 @@ const CampaignDetails = () => {
                 getUserContributionTotal();
                 console.log(receipt)
                 setTakingBackContributionInProcess(false);
+                setIsLoading(false)
             })
             .catch((error) => {
                 console.error(error);
                 setTakingBackContributionInProcess(false);
+                setIsLoading(false)
             });
     }
 
     const [returnContributionsInProcess, setReturnContributionsInProcess] = useState(false);
     function handleReturnContributions() {
         setReturnContributionsInProcess(true);
+        setIsLoading(true)
         blockchain.smartContract.methods
             .refundAllContributions(
                 id
@@ -235,19 +244,29 @@ const CampaignDetails = () => {
             .then((receipt) => {
                 console.log(receipt)
                 setReturnContributionsInProcess(false);
+                setIsLoading(false)
             })
             .catch((error) => {
                 console.error(error);
                 setReturnContributionsInProcess(false);
+                setIsLoading(false)
             });
     }
 
+    const [campaignDescription, setCampaignDescription] = useState([]);
+    useEffect(() => {
+        if (sortedCampaigns.length !== 0) {
+            let descriptionLines = sortedCampaigns.description.split('.').map(line => line + '.')
+            descriptionLines.pop()
+            setCampaignDescription(descriptionLines)
+        }
+    }, [sortedCampaigns])
 
     return (
         <div className="p-2 sm:p-4 md:p-6 lg:p-8 lg:px-20
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
-        bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
-
+        bg-offBlack rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
+            {isloading && <Loader />}
             {sortedCampaigns.length !== 0 ? (
                 <div className='xl:px-auto xl:max-w-[900px]'>
                     <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
@@ -279,15 +298,15 @@ const CampaignDetails = () => {
                     <div className="mt-[60px] flex lg:flex-row flex-col gap-5">
                         <div className="flex-[2] flex flex-col gap-[40px]">
                             <div>
-                                <h4 className="font-semibold text-[18px] text-white uppercase">
+                                <h4 className="font-semibold text-[18px] text-secondary uppercase">
                                     Creator
                                 </h4>
                                 <div className="mt-[20px] flex flex-row items-center flex-wrap gap-[14px]">
                                     <div className="w-[52px] h-[52px] flex items-center justify-center rounded-full">
-                                        <MetamaskAccountIcon size={32} address={sortedCampaigns.owner} />
+                                        <AccountIcon size={32} address={sortedCampaigns.owner} />
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-[14px] text-white break-all">
+                                        <h4 className="font-semibold text-[14px] text-secondary break-all">
                                             {sortedCampaigns.username}<span className='text-[#808191]'> - {truncateAddress(sortedCampaigns.owner, 5)}</span>
                                         </h4>
                                     </div>
@@ -295,7 +314,7 @@ const CampaignDetails = () => {
                             </div>
 
                             <div>
-                                <h2 className="font-semibold text-[18px] text-white uppercase">
+                                <h2 className="font-semibold text-[18px] text-secondary uppercase">
                                     Title
                                 </h2>
                                 <div className="mt-[20px]">
@@ -306,32 +325,42 @@ const CampaignDetails = () => {
                             </div>
 
                             <div>
-                                <h4 className="font-semibold text-[18px] text-white uppercase">
+                                <h4 className="font-semibold text-[18px] text-secondary uppercase">
                                     Description
                                 </h4>
 
                                 <div className="mt-[20px] ">
-                                    <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                        {sortedCampaigns.description}
+                                    <p className="font-normal flex flex-col text-justify">
+                                        {campaignDescription.map((line, index) => (
+                                            line[0] === '#' || line[1] === '#' || line[2] === '#' ? (
+                                            <p key={index} className="mt-2 font-bold text-[18px] text-midGrey leading-[32px] text-justify">
+                                                {line}
+                                            </p>
+                                            ) : (
+                                            <p key={index} className="font-normal text-[16px] text-[#808191] leading-[24px] text-justify">
+                                                {line}
+                                            </p>
+                                            )
+                                        ))}
                                     </p>
                                 </div>
                             </div>
 
                             {blockchain.account !== null && blockchain.account !== '' ? (
                             <div>
-                                {sortedCampaigns.amountContributed !== undefined && parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) < parseFloat(weiToEther(String(sortedCampaigns.target))) && sortedCampaigns.campaignAmountWithdrawn === true ? (
-                                <h4 className="font-semibold text-[18px] text-white uppercase">
+                                {sortedCampaigns.amountContributed !== undefined && parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) < parseFloat(weiToEther(String(sortedCampaigns.target))) && sortedCampaigns.campaignAmountWithdrawn === false ? (
+                                <h4 className="font-semibold text-[18px] text-secondary uppercase">
                                     Your total contribution (returned)
                                 </h4>
                                 ) : (
-                                <h4 className="font-semibold text-[18px] text-white uppercase">
+                                <h4 className="font-semibold text-[18px] text-secondary uppercase">
                                     Your total contribution
                                 </h4>
                                 )}
 
                                 <div className="mt-[20px]">
                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] text-justify">
-                                        {userContributionTotal === 0 ? 0: Math.round(userContributionTotal / 1e18 * 1000) / 1000} EWT ({Math.round(((weiToEther(String(userContributionTotal))/weiToEther(String(sortedCampaigns.target)))*100)* 100) / 100}% of the target)
+                                        {userContributionTotal === 0 ? 0: Math.round(userContributionTotal / 1e18 * 1000) / 1000} LYX ({Math.round(((weiToEther(String(userContributionTotal))/weiToEther(String(sortedCampaigns.target)))*100)* 100) / 100}% of the target)
                                     </p>
                                 </div>
 
@@ -339,7 +368,7 @@ const CampaignDetails = () => {
                                         btnType="button"
                                         title='Take back contribution'
                                         disabled={`${takingBackContributionInProcess || currentTimestamp > sortedCampaigns.deadline ? true : false}`}
-                                        styles={`${takingBackContributionInProcess || currentTimestamp > sortedCampaigns.deadline ? "grayscale cursor-default" : "hover:brightness-110"} bg-[#44BDD0] mt-[8px] w-auto h-[40px]`}
+                                        styles={`${takingBackContributionInProcess || currentTimestamp > sortedCampaigns.deadline ? "grayscale cursor-default" : "hover:brightness-110"} bg-primary mt-[8px] w-auto h-[40px]`}
                                         handleClick={userTakeBackContributions}
                                     />
                             </div>
@@ -349,11 +378,11 @@ const CampaignDetails = () => {
 
                             <div>
                                 {showingAllEntries === false && contributorEntries.length > 0 ? (
-                                    <h4 className="font-semibold text-[18px] text-white">
+                                    <h4 className="font-semibold text-[18px] text-secondary">
                                         <span className='uppercase'>Contributors </span><span className='font-normal text-[16px] text-[#808191]'>(only showing top 3 contributors)</span>
                                     </h4>
                                 ) : (
-                                    <h4 className="font-semibold text-[18px] text-white uppercase">
+                                    <h4 className="font-semibold text-[18px] text-secondary uppercase">
                                         Contributors
                                     </h4>
                                 )}
@@ -362,7 +391,7 @@ const CampaignDetails = () => {
                                         showingAllEntries === false ? (
                                             contributorEntries.slice(0, 3).map((funder) => (
                                                 <div className="flex justify-between items-center gap-4">
-                                                    <MetamaskAccountIcon size={22} address={funder[0]} />
+                                                    <AccountIcon size={22} address={funder[0]} />
                                                     <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="block md:hidden hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
                                                         {truncateAddress(funder[0], 5)}
                                                     </a>
@@ -373,14 +402,14 @@ const CampaignDetails = () => {
                                                         {funder[0]}
                                                     </a>
                                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] break-all">
-                                                        {funder[1] / 1e18} EWT
+                                                        {funder[1] / 1e18} LYX
                                                     </p>
                                                 </div>
                                             ))
                                         ) : (
                                             contributorEntries.map((funder) => (
                                                 <div className="flex justify-between items-center gap-4">
-                                                    <MetamaskAccountIcon size={22} address={funder[0]} />
+                                                    <AccountIcon size={22} address={funder[0]} />
                                                     <a target='_blank' rel='noreferrer' href={`https://explorer.energyweb.org/address/${funder[0]}`} className="block md:hidden hover:text-[#8C6DFD] font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-all">
                                                         {truncateAddress(funder[0], 5)}
                                                     </a>
@@ -391,7 +420,7 @@ const CampaignDetails = () => {
                                                         {funder[0]}
                                                     </a>
                                                     <p className="font-normal text-[16px] text-[#808191] leading-[26px] break-all">
-                                                        {funder[1] / 1e18} EWT
+                                                        {funder[1] / 1e18} LYX
                                                     </p>
                                                 </div>
                                             ))
@@ -404,7 +433,7 @@ const CampaignDetails = () => {
 
                                     {showingAllEntries === false ? (
                                         <button
-                                            className="text-[#8C6DFD] hover:text-white cursor-pointer font-normal text-[16px] leading-[26px]"
+                                            className="text-primary hover:text-secondary cursor-pointer font-normal text-[16px] leading-[26px]"
                                             onClick={() => setShowingAllEntries(true)}
                                         >
                                             Show all contributors
@@ -413,7 +442,7 @@ const CampaignDetails = () => {
 
                                     {showingAllEntries === true ? (
                                         <button
-                                            className="text-[#8C6DFD] hover:text-white cursor-pointer font-normal text-[16px] leading-[26px]"
+                                            className="text-primary hover:text-secondary cursor-pointer font-normal text-[16px] leading-[26px]"
                                             onClick={() => setShowingAllEntries(false)}
                                         >
                                             Show less contributors
@@ -424,13 +453,13 @@ const CampaignDetails = () => {
 
                         </div>
                         <div className="flex-1">
-                            <div className="flex flex-col p-4 bg-[#282945] rounded-[10px]">
+                            <div className="flex flex-col p-4 bg-offBlack rounded-[10px]">
                                 <div className="w-[95%] mx-auto">
                                     <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
                                     <div className="relative">
                                         {sortedCampaigns.status === false && parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) > parseFloat(weiToEther(String(sortedCampaigns.target))) ? (
                                             <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(250,204,21,0.15)]">
-                                                <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign paused</p>
+                                                <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-secondary top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign paused</p>
                                             </div>
                                         ) : (
                                             currentTimestamp > sortedCampaigns.deadline ? (
@@ -440,7 +469,7 @@ const CampaignDetails = () => {
                                                         btnType="button"
                                                         disabled={returnContributionsInProcess}
                                                         title={`${returnContributionsInProcess ? "Returning contributions..." : "Return contributions"}`}
-                                                        styles={`${returnContributionsInProcess ? "bg-[rgba(74,205,141,0.5)]" : "bg-[#4ACD8D]"} font-medium absolute p-2 rounded-xl text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap`}
+                                                        styles={`${returnContributionsInProcess ? "bg-[rgba(74,205,141,0.5)]" : "bg-[#4ACD8D]"} font-medium absolute p-2 rounded-xl text-secondary top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap`}
                                                         handleClick={handleReturnContributions}
                                                     />
                                                     </div>
@@ -448,11 +477,11 @@ const CampaignDetails = () => {
                                                     sortedCampaigns.amountContributed !== undefined &&
                                                     parseFloat(weiToEther(String(sortedCampaigns.amountContributed))) < parseFloat(weiToEther(String(sortedCampaigns.target))) && sortedCampaigns.campaignAmountWithdrawn === true ? (
                                                         <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(140,109,253,0.15)]">
-                                                            <p className="text-center font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-[25%] left-[25%] transform -translate-x-[15%] -translate-y-[0%] whitespace-break-spaces">Campaign ended, all contributions have been returned</p>
+                                                            <p className="text-center font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-secondary top-[25%] left-[25%] transform -translate-x-[15%] -translate-y-[0%] whitespace-break-spaces">Campaign ended, all contributions have been returned</p>
                                                         </div>
                                                     ) : (
                                                         <div className="absolute rounded-xl top-[-7.5%] left-[-7.5%] w-[115%] h-[115%] z-1 bg-[rgba(140,109,253,0.15)]">
-                                                            <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign ended</p>
+                                                            <p className="font-medium absolute p-2 rounded-xl bg-[rgba(0,0,0,0.5)] text-secondary top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">Campaign ended</p>
                                                         </div>
                                                     )
                                                 )
@@ -462,31 +491,40 @@ const CampaignDetails = () => {
                                         )}
                                         <div>
                                             {sortedCampaigns.amountContributed !== '0' && sortedCampaigns.amountContributed !== undefined ? (
-                                                <div className='bg-[#1C1D30] mb-[10px] rounded-lg p-1 md:p-2'>
-                                                    <p className='text-white text-[14px] text-center'>{Math.round(weiToEther(String(sortedCampaigns.amountContributed)) * 1000) / 1000} EWT <span className='font-normal text-[#808191]'>Out of</span> {weiToEther(String(sortedCampaigns.target))} EWT <span className='font-normal text-[#808191]'>collected (</span>{(weiToEther(String(sortedCampaigns.amountContributed)) / weiToEther(String(sortedCampaigns.target)) * 100).toFixed(2)}%<span className='font-normal text-[#808191]'>)</span></p>
+                                                <div className='bg-offBlackDarker mb-[10px] rounded-lg p-1 md:p-2'>
+                                                    <p className='text-secondary text-[14px] text-center'>{Math.round(weiToEther(String(sortedCampaigns.amountContributed)) * 1000) / 1000} LYX <span className='font-normal text-[#808191]'>Out of</span> {weiToEther(String(sortedCampaigns.target))} LYX <span className='font-normal text-[#808191]'>collected (</span>{(weiToEther(String(sortedCampaigns.amountContributed)) / weiToEther(String(sortedCampaigns.target)) * 100).toFixed(2)}%<span className='font-normal text-[#808191]'>)</span></p>
                                                 </div>
                                             ) : (
-                                                <div className='bg-[#1C1D30] mb-[10px] rounded-lg p-1 md:p-2'>
-                                                    <p className='text-white text-[14px] text-center'>{Math.round(0 / 1e18 * 100) / 100} EWT <span className='font-normal text-[#808191]'>Out of</span> {weiToEther(String(sortedCampaigns.target))} EWT <span className='font-normal text-[#808191]'>collected (</span>0%<span className='font-normal text-[#808191]'>)</span></p>
+                                                <div className='bg-offBlackDarker mb-[10px] rounded-lg p-1 md:p-2'>
+                                                    <p className='text-secondary text-[14px] text-center'>{Math.round(0 / 1e18 * 100) / 100} LYX <span className='font-normal text-[#808191]'>Out of</span> {weiToEther(String(sortedCampaigns.target))} LYX <span className='font-normal text-[#808191]'>collected (</span>0%<span className='font-normal text-[#808191]'>)</span></p>
                                                 </div>
                                             )}
                                             <input
                                                 id='currentFundAmount'
                                                 type="number"
-                                                placeholder="1 EWT"
+                                                placeholder="1 LYX"
                                                 step="0.1"
-                                                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
+                                                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[2px] border-midGrey bg-transparent text-secondary text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
                                                 onChange={setNewAmount}
                                             />
                                             {fundButtonOn === true ? (
                                                 blockchain.account !== null && blockchain.account !== "" ? (
+                                                    sortedCampaigns.status === true ? (
                                                     <CustomButton
                                                         btnType="button"
                                                         disabled={contributionInProcess}
                                                         title={`${contributionInProcess ? "Funding Campaign..." : "Fund Campaign"}`}
-                                                        styles={`${contributionInProcess ? "bg-[rgba(74,205,141,0.5)]" : "bg-[#4ACD8D]"} w-full h-[60px] mt-[20px]`}
+                                                        styles={`${contributionInProcess ? "bg-midGrey" : "bg-primary"} w-full h-[60px] mt-[20px]`}
                                                         handleClick={handleDonate}
                                                     />
+                                                    ) : (
+                                                        <CustomButton
+                                                        btnType="button"
+                                                        disabled={true}
+                                                        title={'Campaign paused'}
+                                                        styles='bg-midGrey w-full h-[60px] mt-[20px]'
+                                                    />
+                                                    )
                                                 ) : (
                                                     <CustomButton
                                                         btnType="button"
@@ -508,7 +546,7 @@ const CampaignDetails = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="mt-[40px] p-4 bg-[#13131a] rounded-[10px]">
+                                    <div className="mt-[40px] p-4 bg-offBlackDarker rounded-[10px]">
                                         <div className="flex flex-row justify-around">
                                             <div className="flex flex-col mr-2">
                                                 <h4 className="font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">
@@ -536,8 +574,8 @@ const CampaignDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
-                                        <h4 className="font-semibold text-[14px] leading-[22px] text-white">
+                                    <div className="my-[20px] p-4 bg-offBlackDarker rounded-[10px]">
+                                        <h4 className="font-semibold text-[14px] leading-[22px] text-secondary">
                                             Back it just because you believe in it.
                                         </h4>
                                         <p className="mt-[20px] font-normal leading-[22px] text-[#808191]">

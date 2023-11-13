@@ -100,7 +100,7 @@ const Navbar = () => {
                         ))}
                     </ul>
                 )}
-                <div onClick={removeSearchTerm} className='brightness-110 transition-all hover:shadow-[0_0px_20px_0px] hover:shadow-primary bg-primary rounded-lg h-fit flex my-auto mr-3 p-[1px] cursor-pointer'>
+                <div onClick={removeSearchTerm} className='hover:brightness-110 transition-all hover:shadow-[0_0px_20px_0px] hover:shadow-primary bg-primary rounded-lg h-fit flex my-auto mr-3 p-[1px] cursor-pointer'>
                     <RxCross2 size={20} color={'#FFF1F8'} />
                 </div>
                 <div className="hover:brightness-110 transition-all hover:shadow-[0_0px_20px_0px] hover:shadow-primary w-[56px] h-full rounded-xl bg-primary flex justify-center items-center cursor-pointer">
