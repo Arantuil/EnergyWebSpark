@@ -248,7 +248,7 @@ const CampaignDetails = () => {
         xs:ml-[10px] ml-[16px] sm:ml-[20px] 3xs:w-[calc(100%-50px-10px)] 2xs:w-[calc(100%-60px-10px)] xs:w-[calc(100%-70px-10px)] w-[calc(100%-80px-16px)] sm:w-[calc(100%-80px-20px)] 
         bg-[#282945] rounded-xl 3xs:mt-[calc(16px+32px)] 2xs:mt-[calc(16px+40px)] xs:mt-[calc(16px+50px)] mt-[calc(16px+60px)] flex justify-center content-start flex-row flex-wrap">
 
-            {sortedCampaigns !== [] && sortedCampaigns.length !== 0 ? (
+            {sortedCampaigns.length !== 0 ? (
                 <div className='xl:px-auto xl:max-w-[900px]'>
                     <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
                         <div className="flex-1 flex-col">
@@ -358,7 +358,7 @@ const CampaignDetails = () => {
                                     </h4>
                                 )}
                                 <div className="mt-[20px] sm:mt-[30px] md:mt-[40px] flex flex-col gap-4">
-                                    {contributorEntries.length > 0 && contributorEntries.length !== [] ? (
+                                    {contributorEntries.length > 0 && contributorEntries.length !== 0 ? (
                                         showingAllEntries === false ? (
                                             contributorEntries.slice(0, 3).map((funder) => (
                                                 <div className="flex justify-between items-center gap-4">

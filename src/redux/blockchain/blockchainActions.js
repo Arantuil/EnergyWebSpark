@@ -49,17 +49,18 @@ export const connect = () => {
     });
     const CONFIG = await configResponse.json();
     const { ethereum } = window;
-    const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
-    if (metamaskIsInstalled) {
+    console.log(ethereum)
       Web3EthContract.setProvider(ethereum);
       let web3 = new Web3(ethereum);
       try {
         const accounts = await ethereum.request({
           method: "eth_requestAccounts",
         });
-        const networkId = await ethereum.request({
-          method: "net_version",
-        });
+        console.log(accounts)
+        //const networkId = await ethereum.request({
+        //  method: "net_version",
+        //});
+        const networkId = 4201;
         if (Number(networkId) === CONFIG.NETWORK.ID) {
           const SmartContractObj = new Web3EthContract(
             abi,
@@ -86,9 +87,6 @@ export const connect = () => {
       } catch (err) {
         dispatch(connectFailed("Something went wrong."));
       }
-    } else {
-      dispatch(connectFailed("Install Metamask."));
-    }
   };
 };
 

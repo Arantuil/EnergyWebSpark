@@ -1,4 +1,4 @@
-export const testCampaingCards = [
+export const testCampaignCards = [
     {
         campaignId: 0,
         title: 'Upgrade back-end server',
@@ -6,9 +6,9 @@ export const testCampaingCards = [
         owner: '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6',
         username: 'User',
         description: 'Upgrade back-end server for certain project',
-        target: 100,
+        target: 100000000000000000000,
         amountCollected: 40,
-        deadline: 1692511920000,
+        deadline: 1700016667,
         funders: {'0x5F336792C4f3A5579262d7Eec3Dd0A401F0517E6': 5.1, '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e': 2.7, '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6': 1.9}
     },
     {
@@ -18,9 +18,9 @@ export const testCampaingCards = [
         owner: '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6',
         username: 'Arantuil',
         description: 'Fund to build a turtle reservoir, #savetheturtles',
-        target: 100,
+        target: 100000000000000000000,
         amountCollected: 68.456,
-        deadline: 1690511920000,
+        deadline: 1700116667,
         funders: {'0x5F336792C4f3A5579262d7Eec3Dd0A401F0517E6': 5.1, '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e': 2.7, '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6': 1.9}
     },
     {
@@ -30,9 +30,9 @@ export const testCampaingCards = [
         owner: '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6',
         username: 'Arantuil',
         description: 'Fund to give queen frog a new lambo after we all voted to crash her lambo into the woods',
-        target: 100,
+        target: 100000000000000000000,
         amountCollected: 20,
-        deadline: 1690511920000,
+        deadline: 1700316667,
         funders: {'0x5F336792C4f3A5579262d7Eec3Dd0A401F0517E6': 5.1, '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e': 2.7, '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6': 1.9}
     },
     {
@@ -42,9 +42,9 @@ export const testCampaingCards = [
         owner: '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e',
         username: 'Arantuil',
         description: 'Build a new shared planet on sootopia',
-        target: 100,
+        target: 100000000000000000000,
         amountCollected: 410,
-        deadline: 1660511920000,
+        deadline: 1700516667,
         funders: {}
     },
     {
@@ -54,9 +54,9 @@ export const testCampaingCards = [
         owner: '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e',
         username: 'Arantuil',
         description: 'This campaign is to gather funding for planting 100 trees.',
-        target: 150,
+        target: 100000000000000000000,
         amountCollected: 10,
-        deadline: 1694511920000,
+        deadline: 1700376667,
         funders: {  
                 '0xc52752f731bb0F20C7C1f0110c6FC96C540C43B6': 5.1, 
                 '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e': 2.7,
@@ -71,9 +71,9 @@ export const testCampaingCards = [
         owner: '0x5F336792C4f3A5579262d7Eec3Dd0A401F0517E6',
         username: 'Arantuil',
         description: "Let's make a on-chain crowdfunding platform to deploy on the EnergyWeb Chain to support the ecosystem's growth",
-        target: 150,
+        target: 100000000000000000000,
         amountCollected: 10,
-        deadline: 1694511920000,
+        deadline: 1700116667,
         funders: {  
             '0x5F336792C4f3A5579262d7Eec3Dd0A401F0517E6': 5.1, 
             '0x2A8B5A587F60c0EE39d85df41590BAD8c2aCB55e': 2.7, 

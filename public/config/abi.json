@@ -588,7 +588,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct EnergyWebSparkV1.Campaign[]",
+				"internalType": "struct LuksoIgniteV1.Campaign[]",
 				"name": "",
 				"type": "tuple[]"
 			}

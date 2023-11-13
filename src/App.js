@@ -39,10 +39,10 @@ function App() {
   return (
     isOffline === false && currentTimestamp > openTimestamp ? (
     <div>
-      <div className="flex flex-row relative bg-[#1C1D30] 
+      <div className="flex flex-row relative bg-offBlackDarker 
       xs:px-2 px-3 sm:px-6 md:px-8 
       xs:pt-2 pt-3 sm:pt-6 md:pt-8 
-      xs:pb-3 pb-4 sm:pb-5 md:pb-6 
+      xs:pb-2 pb-3 sm:pb-3 md:pb-4 
 
       xs:min-h-[calc(100vh-40px)] 
       min-h-[calc(100vh-48px)] 
@@ -65,7 +65,7 @@ function App() {
       <Footer />
     </div>
     ) : (
-      <div className="xs:px-2 px-3 sm:px-6 md:px-8 relative justify-center bg-[#1C1D30] min-h-[100%] flex flex-row">
+      <div className="xs:px-2 px-3 sm:px-6 md:px-8 relative justify-center bg-offBlackDarker min-h-[100%] flex flex-row">
       <Provider store={store}>
         <Router>
           <Routes>

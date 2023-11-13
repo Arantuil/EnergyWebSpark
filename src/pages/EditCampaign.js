@@ -133,7 +133,7 @@ const EditCampaign = () => {
                 id,
                 form.title,
                 form.description,
-                form.target,
+                String(form.target),
                 form.deadline,
                 form.image
             )

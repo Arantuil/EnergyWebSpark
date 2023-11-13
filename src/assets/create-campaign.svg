@@ -11,7 +11,7 @@
           <path fill="#fff" d="M0 0h24v24H0z"></path>
         </clipPath>
       </defs>
-      <g fill="none" stroke="#8c6dfd" strokeOpacity="1" display="inline">
+      <g fill="none" stroke="#FE005B" strokeOpacity="1" display="inline">
         <path d="M6.227 21.798l.004-2.624-4.71-6.159c-.292-1.857.04-6.255.229-7.143.638-1.217 1.77-1.1 2.543-.049.6 1.224.77 2.532 1.309 3.727-.962.348-1.473 1.464-1.041 2.133l2.371 2.756"></path>
         <path d="M5.602 9.55c1.947-.857 3.756 3.706 4.587 5.498.251 2.133.156 5.151.183 6.8l-4.145-.05"></path>
         <path

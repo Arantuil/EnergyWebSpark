@@ -1,9 +1,9 @@
 {
-  "CONTRACT_ADDRESS": "0xc9f5a92D9f844aD2136a61aDfbefB24D1E808E66",
+  "CONTRACT_ADDRESS": "0x9EDA0F4557bF34b72021C4f0F6A876D223517B4e",
   "NETWORK": {
-    "NAME": "EnergyWeb",
-    "SYMBOL": "EWT",
-    "ID": 246
+    "NAME": "Testnet",
+    "SYMBOL": "LYXt",
+    "ID": 4201
   },
   "GAS_LIMIT": 300000
 }
